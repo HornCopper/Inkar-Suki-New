@@ -55,3 +55,20 @@ class School:
             if Kungfu(kungfu).school == self.school_name:
                 return color
         return "#FFFFFF"
+    
+    @property
+    def icon(self) -> str:
+        """
+        门派心法图标。
+        """
+        if self.name == None:
+            return ""
+        return build_path(
+            ASSETS,
+            [
+                "image",
+                "jx3",
+                "school",
+                self.name + ".png"
+            ]
+        )

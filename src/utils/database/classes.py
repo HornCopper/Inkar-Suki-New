@@ -2,21 +2,33 @@ from typing import List, Dict
 
 from src.utils.database.lib import LiteModel
 
-class AffectionsList(LiteModel):
+class Affections(LiteModel):
     TABLE_NAME: str = "affections"
-    affections_list: list = []
+    server: str = ""
+    uin_1: int = 0
+    uin_2: int = 0
+    name_1: str = ""
+    name_2: str = ""
+    time: int = 0
+    school_1: str = ""
+    school_2: str = ""
 
 class ApplicationsList(LiteModel):
     TABLE_NAME: str = "applications"
     applications_list: list = []
 
-class BannedWordList(LiteModel):
-    TABLE_NAME: str = "banword"
-    banned_word_list: List[str] = []
+# class BannedWordList(LiteModel):
+#     TABLE_NAME: str = "banword"
+#     banned_word_list: List[str] = []
 
-class BannedList(LiteModel):
+class BannedUser(LiteModel):
     TABLE_NAME: str = "ban"
-    banned_list: list = []
+    user_id: int = 0
+    reason: str = ""    
+
+# class BannedList(LiteModel):
+#     TABLE_NAME: str = "ban"
+#     banned_list: list = []
 
 class GroupSettings(LiteModel):
     TABLE_NAME: str = "settings"

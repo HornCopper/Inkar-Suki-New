@@ -1,10 +1,10 @@
-from typing import Any, List
+from typing import Any, List, Dict
 from nonebot import get_bots
 
 from src.utils.database.classes import GroupSettings
 from src.utils.database import db
 
-def getGroupSettings(group_id: int | str, key: str = "") -> Any:
+def get_group_settings(group_id: int | str, key: str = "") -> Any:
     group_data: GroupSettings | Any = db.where_one(GroupSettings(), "group_id = ?", str(group_id), default=None)
     if group_data is not None:
         return group_data.dump().get(key) if key else group_data.dump()
@@ -12,7 +12,7 @@ def getGroupSettings(group_id: int | str, key: str = "") -> Any:
         db.save(GroupSettings(group_id=str(group_id)))
         return getattr(GroupSettings(), key)
 
-def setGroupSettings(group_id: int | str, key: str, content: Any) -> bool | None:
+def set_group_settings(group_id: int | str, key: str, content: Any) -> bool | None:
     group_data: GroupSettings | Any = db.where_one(GroupSettings(), "group_id = ?", str(group_id), default=None)
     if group_data is None:
         group_data = GroupSettings(group_id=str(group_id))
@@ -23,7 +23,7 @@ def setGroupSettings(group_id: int | str, key: str, content: Any) -> bool | None
     setattr(group_data, key, content)
     db.save(group_data)
 
-def getAllGroups() -> bool | list:
+def get_groups() -> bool | list:
     all_db_obj: List[GroupSettings | Any] | None = db.where_all(GroupSettings())
     groups = []
     if not isinstance(all_db_obj, list):
@@ -36,10 +36,10 @@ async def send_subscribe(subscribe: str = "", msg: str = "", server: str | None 
     bots: dict = get_bots()
     if bots == {}:
         return
-    groups = getAllGroups()
+    groups = get_groups()
     if isinstance(groups, bool):
         return
-    group = {}
+    group: Dict[str, List[str]] = {}
 
     for i in list(bots):
         single_groups = await bots[i].call_api("get_group_list")
@@ -51,11 +51,11 @@ async def send_subscribe(subscribe: str = "", msg: str = "", server: str | None 
     for group_id in groups:
         for x in list(group):
             if int(group_id) in group[x]:
-                group_data = getGroupSettings(str(group_id), "subscribe")
+                group_data = get_group_settings(str(group_id), "subscribe")
                 if not isinstance(group_data, list):
                     return
                 if subscribe in group_data:
-                    group_server = getGroupSettings(str(group_id), "server")
+                    group_server = get_group_settings(str(group_id), "server")
                     if server != "" and (group_server == "" or group_server != server):
                         continue
                     await bots[x].call_api("send_group_msg", group_id=int(group_id), message=msg)

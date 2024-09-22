@@ -1,6 +1,6 @@
 from typing import List, Dict
 
-from src.utils.database.operation import getGroupSettings
+from src.utils.database.operation import get_group_settings
 from src.const.path import (
     ASSETS,
     build_path
@@ -33,9 +33,11 @@ class Server:
     @property
     def server(self) -> str | None:
         if self._server is None and self.group_id is not None:
-            final_server = getGroupSettings(self.group_id)
+            final_server = get_group_settings(self.group_id)
         elif self._server is not None:
             final_server = self.server_raw
+            if final_server == None and self.group_id:
+                final_server = get_group_settings(self.group_id)
         else:
             final_server = None
         return final_server

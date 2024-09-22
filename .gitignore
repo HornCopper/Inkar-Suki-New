@@ -164,3 +164,7 @@ cython_debug/
 # Visual Studios Code
 
 .vscode/
+
+# Some private code just for public instance
+auto_accept.py
+src/plugins/book/

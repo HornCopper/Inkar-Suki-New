@@ -14,6 +14,8 @@ ASSETS: str = get_path("assets")
 TEMPLATES: str = get_path("templates")
 PLUGINS: str = get_path("plugins")
 CONST: str = get_path("const")
+CONFIG: str = get_path("config")
 
-def build_path(const: str, path: List[str]) -> str:
-    return os.path.join(const, *path)
+def build_path(const: str, path: List[str], end_with_slash: bool = False) -> str:
+    end = "" if not end_with_slash else os.sep
+    return os.path.join(const, *path) + end

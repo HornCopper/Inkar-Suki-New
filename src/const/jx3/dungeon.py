@@ -23,6 +23,9 @@ class Dungeon:
 
     @property
     def name(self) -> str | None:
+        """
+        副本实际名称
+        """
         data = self.dungeon_name
         for zone_name in data:
             if self._name in data[zone_name]:
@@ -31,6 +34,9 @@ class Dungeon:
         
     @property
     def mode(self) -> str | None:
+        """
+        实际难度
+        """
         data = self.dungeon_mode
         for mode in data:
             if self._mode in data[mode]:
