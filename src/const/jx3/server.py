@@ -1,18 +1,8 @@
 from typing import List, Dict
 
 from src.utils.database.operation import get_group_settings
-from src.const.path import (
-    ASSETS,
-    build_path
-)
 
-import json
-
-with open(build_path(ASSETS, ["source", "jx3", "server_aliases.json"])) as server_aliases:
-    server_aliases_data = json.loads(server_aliases.read())
-
-with open(build_path(ASSETS, ["source", "jx3", "server_zones_mapping.json"])) as server_zones_mapping:
-    server_zones_mapping_data = json.loads(server_zones_mapping.read())
+from .constant import server_aliases_data, server_zones_mapping_data
 
 class Server:
     server_aliases: Dict[str, List[str]] = server_aliases_data

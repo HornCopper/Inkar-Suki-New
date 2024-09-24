@@ -6,21 +6,8 @@ from src.const.path import (
     ASSETS,
     build_path
 )
-from src.const.jx3.school import school_aliases_data
 
-import json
-
-with open(build_path(ASSETS, ["source", "jx3", "kungfu_aliases.json"])) as kungfu_aliases:
-    kungfu_aliases_data = json.loads(kungfu_aliases.read())
-
-with open(build_path(ASSETS, ["source", "jx3", "kungfu_colors.json"])) as kungfu_colors:
-    kungfu_colors_data = json.loads(kungfu_colors.read())
-
-with open(build_path(ASSETS, ["source", "jx3", "kungfu_internel_id.json"])) as kungfu_internel_id:
-    kungfu_internel_id_data = json.loads(kungfu_internel_id.read())
-
-with open(build_path(ASSETS, ["source", "jx3", "kungfu_baseattr.json"])) as kungfu_baseattr:
-    kungfu_baseattr_data = json.loads(kungfu_baseattr.read())
+from .constant import kungfu_aliases_data, kungfu_colors_data, kungfu_internel_id_data, school_aliases_data
 
 class Kungfu:
     kungfu_aliases: Dict[str, List[str]] = kungfu_aliases_data

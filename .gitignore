@@ -172,3 +172,9 @@ src/plugins/book/
 # More recommended to get by user themselves
 qixue_latest.json
 src/assets/image/jx3/attributes/equips/
+
+# Require user themselves to write
+src/utils/database/uid.py
+
+# Configuration file
+src/config/config.yml

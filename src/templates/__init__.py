@@ -72,7 +72,6 @@ class SimpleHTML:
         self,
         html_type: str,
         html_template: str,
-        /
         outside_js: str = "",
         outside_css: str = "",
         **kwargs

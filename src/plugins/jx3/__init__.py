@@ -71,5 +71,5 @@ async def on_startup():
     headers = {
         "token": Config.jx3.ws.token
     }
-    asyncio.create_task(websocket_client(ws_url, headers))
-    asyncio.create_task(ScreenshotGenerator.launch())
+    ws = asyncio.create_task(websocket_client(ws_url, headers))
+    pw = asyncio.create_task(ScreenshotGenerator.launch())

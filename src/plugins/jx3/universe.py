@@ -18,8 +18,15 @@ from .attributes import (
     AttributeV2Matcher,
     AttributeV4Matcher
 )
+from .bind import (
+    BindServerMatcher,
+    RoleCheckMatcher
+)
 from .couple import (
     BindAffectionMatcher,
     DeleteAffectionMatcher,
     AffectionsCrtMatcher
+)
+from .lookup import (
+    LookupPersonMatcher
 )

@@ -1,12 +1,9 @@
 from typing import Any
 
 from src.config import Config
-
 from src.const.jx3.server import Server
 from src.const.prompts import PROMPT
-
 from src.utils.network import Request
-
 from src.utils.database import db
 from src.utils.database.classes import RoleData
 from src.utils.decorators import (
@@ -20,8 +17,6 @@ try:
 except:
     pass
 
-import json
-
 @token_required
 @ticket_required
 async def get_uid(roleName: str, serverName: str, token: str, ticket: str):
@@ -33,7 +28,6 @@ async def get_uid(roleName: str, serverName: str, token: str, ticket: str):
     else:
         return None
 
-@ticket_required
 async def get_uid_data(role_id: str = "", server: str = "") -> str | list:
     current_data: RoleData | Any = db.where_one(RoleData(), "roleId = ?", role_id, default=RoleData())
     if current_data.roleName != "":

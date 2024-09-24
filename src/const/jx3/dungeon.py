@@ -1,17 +1,6 @@
 from typing import List, Dict
 
-from src.const.path import (
-    ASSETS,
-    build_path
-)
-
-import json
-
-with open(build_path(ASSETS, ["source", "jx3", "dungeon_name.json"])) as dungeon_name:
-    dungeon_name_data = json.loads(dungeon_name.read())
-
-with open(build_path(ASSETS, ["source", "jx3", "dungeon_mode.json"])) as dungeon_mode:
-    dungeon_mode_data = json.loads(dungeon_mode.read())
+from .constant import dungeon_mode_data, dungeon_name_data
 
 class Dungeon:
     dungeon_name: Dict[str, List[str]] = dungeon_name_data

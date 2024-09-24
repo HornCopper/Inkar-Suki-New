@@ -8,13 +8,7 @@ from src.const.path import (
 )
 from src.const.jx3.kungfu import Kungfu, kungfu_colors_data
 
-import json
-
-with open(build_path(ASSETS, ["source", "jx3", "school_aliases.json"])) as school_aliases:
-    school_aliases_data = json.loads(school_aliases.read())
-
-with open(build_path(ASSETS, ["source", "jx3", "school_internel_id.json"])) as school_internel_id:
-    school_internel_id_data = json.loads(school_internel_id.read())
+from .constant import school_aliases_data, school_internel_id_data
 
 class School:
     school_aliases: Dict[str, List[str]] = school_aliases_data
