@@ -5,8 +5,11 @@ from playwright.async_api import (
 )
 from typing import Optional
 from pathlib import Path
+from nonebot.log import logger
+
 from src.utils.exceptions import BrowserNotInitializedException
 from src.const.path import CACHE
+
 import uuid
 import asyncio
 
@@ -68,6 +71,7 @@ class ScreenshotGenerator:
             async with async_playwright() as p:
                 cls._browser = await p.chromium.launch(headless=True)
                 cls._context = await cls._browser.new_context()
+                logger.info("Playwright 已载入")
 
     @classmethod
     async def close(cls):

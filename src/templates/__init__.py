@@ -1,8 +1,8 @@
+from typing import Literal
 from jinja2 import Template
 
 from src.const.path import (
     ASSETS, 
-    CACHE, 
     TEMPLATES, 
     build_path
 )
@@ -50,8 +50,8 @@ class HTMLSourceCode:
     def __str__(self) -> str:
         if self.kwargs.get("table_head", None) is not None:
             self.kwargs["table_width_length"] = str(len(re.findall(r"<th.*?>.*?</th>", self.kwargs.get("table_head", []), re.DOTALL)))
-        css_path = f"<link rel=\"stylesheet\" href=\"" + self.css + "\">" if self.css.startswith("file") else ""
-        css_content = self.css if not self.css.startswith("file") else ""
+        css_path = f"<link rel=\"stylesheet\" href=\"" + self.css + "\">" if self.css.startswith("file") or self.css.startswith("http") else ""
+        css_content = self.css if not self.css.startswith("file") and not self.css.startswith("http") else ""
         return Template(
             self.standard
         ).render(
@@ -63,3 +63,48 @@ class HTMLSourceCode:
             footer_msg = self.footer,
             **self.kwargs
         )
+    
+class SimpleHTML:
+    """
+    无法使用`HTMLSourceCode`模板生成`HTML`的解决方案。
+    """
+    def __init__(
+        self,
+        html_type: str,
+        html_template: str,
+        /
+        outside_js: str = "",
+        outside_css: str = "",
+        **kwargs
+    ):
+        """
+        初始化简易`HTML`读取器。
+
+        Args:
+            html_type (str): `HTML`源代码类型，通常与对应的功能有关，例如`jx3`、`majsoul`等。
+            html_template (str): `HTML`模板文件名，可以不带`.html`后缀。
+            outside_js (str): 非必需。外部`JavaScript`路径，只接受本地的`File URL`或外部的`URL`，或文件路径。
+            outside_css (str): 非必需。外部`CSS`路径，只接受本地的`File URL`或外部的`URL`，或文件路径。
+        """
+        if not html_template.endswith(".html"):
+            html_template = html_template + ".html"
+        css = "" if not outside_css else f"<link rel=\"stylesheet\" href=\"" + outside_css + "\">"
+        js = "" if not outside_js else f"<script src=\"" + outside_js + "\"></script>"
+        self.html_source = Template(
+            read(
+                build_path(
+                    TEMPLATES,
+                    [
+                        html_type,
+                        html_template
+                    ]
+                )
+            )
+        ).render(
+            css = css,
+            js = js,
+            **kwargs
+        )
+
+    def __str__(self):
+        return self.html_source

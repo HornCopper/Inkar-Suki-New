@@ -41,7 +41,6 @@ async def poll_weibo_api(uid, interval=60):
                     if posts:
                         latest_post = posts[0]
                         post_id = latest_post.get("idstr")
-                        
                         if last_seen_id != post_id and not check_time(latest_post.get("created_at")):
                             await execute_on_new_post(latest_post)
                             last_seen_id = post_id

@@ -1,26 +1,22 @@
 from src.utils.database.lib import Database
 from src.utils.database.classes import (
-    AffectionsList,
+    Account,
     ApplicationsList,
-    BannedList,
-    BannedWordList,
+    BannedUser,
     GroupSettings,
-    Permission,
     Population,
     RoleData
 )
 
-from src.const.path import DATA
+from src.const.path import DATA, build_path
 
-db = Database(DATA + "/database/Snowykami.db")
+db = Database(build_path(DATA, ["global", "Snowykami.db"]))
 
 db.auto_migrate(
-    AffectionsList(),
+    Account(),
     ApplicationsList(),
-    BannedList(),
-    BannedWordList(),
+    BannedUser(),
     GroupSettings(),
-    Permission(),
     Population(),
     RoleData()
 )

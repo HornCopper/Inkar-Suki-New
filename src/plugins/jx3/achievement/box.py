@@ -1,7 +1,6 @@
 from typing import Literal, List
 from pydantic import BaseModel
 
-from src.utils.typing import Response
 from src.utils.network import Request
 
 class AchievementInformation(BaseModel):
@@ -14,8 +13,7 @@ class AchievementInformation(BaseModel):
     map: str
 
 async def get_adventure(adventure: str) -> Literal[False] | List[AchievementInformation]:
-    resp: Response = await Request(f"https://helper.jx3box.com/api/achievement/search?keyword={adventure}&page=1&limit=15&client=std").get()
-    info = resp.json()
+    info = (await Request(f"https://helper.jx3box.com/api/achievement/search?keyword={adventure}&page=1&limit=15&client=std").get()).json()
     data = info["data"]["achievements"]
     if len(data) == 0:
         return False

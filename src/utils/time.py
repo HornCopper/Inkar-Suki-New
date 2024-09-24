@@ -14,6 +14,13 @@ class Time:
         time = int(datetime.now().timestamp()) if time == 0 else time
         self.current: int = time
 
+    @property
+    def raw_time(self):
+        """
+        原始时间戳。
+        """
+        return self.current
+
     def format(self, form: str = "%Y年%m月%d日 %H:%M:%S"):
         """
         格式化时间。

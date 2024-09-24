@@ -2,6 +2,14 @@ from typing import List, Dict
 
 from src.utils.database.lib import LiteModel
 
+class Account(LiteModel):
+    TABLE_NAME: str = "acouunts"
+    user_id: int = 0
+    checkin_counts: int = 0
+    coins: int = 0
+    permission: int = 0
+    last_checkin: int = 0
+
 class Affections(LiteModel):
     TABLE_NAME: str = "affections"
     server: str = ""
@@ -41,10 +49,6 @@ class GroupSettings(LiteModel):
     wiki: dict = {"startwiki": "", "interwiki": []}
     webhook: List[str] = []
     opening: list = []
-
-class Permission(LiteModel):
-    TABLE_NAME: str = "permission"
-    permissions_list: dict = {}
 
 class Population(LiteModel):
     TABLE_NAME: str = "population"

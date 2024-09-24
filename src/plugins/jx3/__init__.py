@@ -2,7 +2,7 @@ from nonebot import get_driver
 from nonebot.log import logger
 
 from src.config import Config
-from src.const.path import ASSETS
+from src.const.path import ASSETS, build_path
 from src.utils.generate import (
     ScreenshotGenerator,
     generate
@@ -45,7 +45,7 @@ async def websocket_client(ws_url: str, headers: dict):
                         url, title = parsed.provide_data()
                         if re.match(r'(\d+)月(\d+)日(.*?)版本更新公告', title):
                             try:    
-                                shutil.rmtree(ASSETS + "/jx3/update.png")
+                                shutil.rmtree(build_path(ASSETS, ["jx3", "update.png"]))
                             except FileNotFoundError:
                                 pass
                             await generate(
@@ -55,7 +55,7 @@ async def websocket_client(ws_url: str, headers: dict):
                                 viewport={"height": 3840, "width": 2000}, 
                                 hide_classes=["detail_bot", "bdshare-slide-button"], 
                                 device_scale_factor=2.0,
-                                output_path=ASSETS + "/jx3/update.png"
+                                output_path=build_path(ASSETS, ["jx3", "update.png"])
                             )
                     await send_subscribe(name, msg.msg, msg.server)
                     logger.info(msg.msg)

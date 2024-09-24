@@ -1,20 +1,7 @@
-from typing import Dict
+from typing import Dict, Any
 
-from src.utils.exceptions import DatabaseInternelException
-from src.utils.database.classes import Permission
+from src.utils.database.classes import Account
 from src.utils.database import db
-
-def get_all_admin() -> Permission:
-    """
-    获取权限数据库对象。
-
-    Returns:
-        obj (Permission): 权限数据库对象。
-    """
-    data = db.where_one(Permission(), default=Permission())
-    if not isinstance(data, Permission):
-        raise DatabaseInternelException()
-    return data
 
 def checker(user_id: str | int, level: str | int) -> bool:
     """
@@ -24,9 +11,8 @@ def checker(user_id: str | int, level: str | int) -> bool:
         user_id (str, int): 用户`uin`。
         level (str, int): 至少需达到的权限等级。
     """
-    data: Permission = get_all_admin()
-    permissions: Dict[str, str] = data.permissions_list
-    return False if str(user_id) not in permissions else int(permissions[str(user_id)]) >= int(level)
+    data: Account | Any = db.where_one(Account(), "user_id = ?", int(user_id), default=Account())
+    return data.permission >= int(level)
 
 def error(level: int | str) -> str:
     """

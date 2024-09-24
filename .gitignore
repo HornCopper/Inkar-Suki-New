@@ -168,3 +168,7 @@ cython_debug/
 # Some private code just for public instance
 auto_accept.py
 src/plugins/book/
+
+# More recommended to get by user themselves
+qixue_latest.json
+src/assets/image/jx3/attributes/equips/

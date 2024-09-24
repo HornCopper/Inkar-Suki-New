@@ -4,19 +4,13 @@ from nonebot.matcher import Matcher
 from nonebot.adapters.onebot.v11 import MessageEvent
 from nonebot.params import CommandArg
 
+from src.config import Config
 from src.const.prompts import PROMPT
 from src.utils.analyze import check_number
 from src.utils.permission import checker, error
 from src.utils.message import preprocess
 
 from .process import Ban
-
-# from src.tools.config import Config
-# from src.tools.utils.num import check_number
-# from src.tools.permission import checker, error
-# from src.tools.database import group_db, BannedList, GroupSettings
-# from src.tools.basic.process import preprocess
-
 
 BanMatcher = on_command("ban", force_whitespace=True, priority=5)
 
@@ -33,7 +27,7 @@ async def _(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
     status = Ban(event.user_id).ban()
     if not status:
         await BanMatcher.finish(PROMPT.BanRepeatInvalid)
-    await BanMatcher.finish(f"好的，音卡已经封禁({user_id})！")
+    await BanMatcher.finish(f"好的，{Config.bot_basic.bot_name}已经封禁({user_id})！")
 
 UnbanMatcher = on_command("unban", force_whitespace=True, priority=5)
 

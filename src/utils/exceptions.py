@@ -16,3 +16,9 @@ class DatabaseInternelException(Exception):
     """
     `SQLite3`数据库错误。
     """
+
+class QixueDataUnavailable(Exception):
+    """
+    没有任何可用的奇穴数据。
+    """
+    ...

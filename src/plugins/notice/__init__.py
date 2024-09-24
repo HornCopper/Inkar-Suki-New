@@ -103,9 +103,9 @@ async def _(bot: Bot, event: GroupRequestEvent):
         await bot.call_api("send_group_msg", group_id=int(notice_to[str(event.self_id)]), message=msg)
 
 
-notice_cmd_welcome_msg_edit = on_command("welcome", force_whitespace=True, priority=5)
+WelcomeEditMatcher = on_command("welcome", force_whitespace=True, priority=5)
 
-@notice_cmd_welcome_msg_edit.handle()
+@WelcomeEditMatcher.handle()
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
@@ -114,6 +114,6 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     personal_data = await bot.call_api("get_group_member_info", group_id=event.group_id, user_id=event.user_id, no_cache=True)
     group_admin = personal_data["role"] in ["owner", "admin"]
     if not permission and not group_admin:
-        await notice_cmd_welcome_msg_edit.finish(error(5))
+        await WelcomeEditMatcher.finish(error(5))
     set_group_settings(str(event.group_id), "welcome", arg_msg)
-    await notice_cmd_welcome_msg_edit.finish("好啦，已经设置完成啦！")
+    await WelcomeEditMatcher.finish("好啦，已经设置完成啦！")
