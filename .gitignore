@@ -178,3 +178,6 @@ src/utils/database/uid.py
 
 # Configuration file
 src/config/config.yml
+
+# Data files
+src/data

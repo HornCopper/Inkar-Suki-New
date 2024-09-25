@@ -1,5 +1,4 @@
 from pathlib import Path
-from typing import Optional, Union
 from jinja2 import Template
 
 from src.utils.network import Request

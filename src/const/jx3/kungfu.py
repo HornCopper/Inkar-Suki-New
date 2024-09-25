@@ -85,3 +85,14 @@ class Kungfu:
             if self.name in kungfus:
                 return base_attr
         return None
+    
+    @property
+    def id(self) -> int | None:
+        """
+        心法ID。
+        """
+        if self.name is None:
+            return None
+        for kungfu, internel_id in self.kungfu_internel_id:
+            if kungfu == self.name:
+                return int(internel_id)

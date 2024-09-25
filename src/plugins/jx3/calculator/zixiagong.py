@@ -1,6 +1,6 @@
 # DPS计算器 紫霞功
 
-from typing import Tuple, Literal, List, Dict, Callable
+from typing import Tuple, List
 from jinja2 import Template
 from pathlib import Path
 
@@ -173,7 +173,7 @@ async def get_calculated_img_zixiagong(server: str, name: str):
     tuilan_data = (await Request("https://m.pvp.xoyo.com/mine/equip/get-role-equip", params=params).post(tuilan=True)).json()
     school = Kungfu.with_internel_id(tuilan_data["data"]["Kungfu"]["KungfuID"])
     if school.name != "紫霞功":
-        return ["唔……门派与计算器不匹配！"]
+        return [PROMPT.CalculatorNotMatch]
     data_obj = ZiXiaGongAttributes(tuilan_data)
     attrs = data_obj.attributes
     cw = [data_obj.is_dcw, data_obj.is_xcw]

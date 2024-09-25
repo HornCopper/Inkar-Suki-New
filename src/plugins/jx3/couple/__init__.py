@@ -5,6 +5,7 @@ from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
 from nonebot.params import CommandArg
 
+from src.const.prompts import PROMPT
 from src.utils.analyze import check_number
 from src.utils.network import Request
 from src.utils.time import Time
@@ -23,7 +24,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         return
     arg = args.extract_plain_text().split(" ")
     if len(arg) not in [3, 4]:
-        await BindAffectionMatcher.finish("绑定失败！请参考下面的命令格式：\n绑定情缘 自己ID 对方ID 对方QQ 时间(可不填)")
+        await BindAffectionMatcher.finish(PROMPT.ArgumentCountInvalid)
     self_name = arg[0]
     self_qq = event.user_id
     other_name = arg[1]
@@ -38,9 +39,9 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         try:
             timestamp = int(datetime.strptime(custom_time, "%Y-%m-%d").timestamp())
         except ValueError:
-            await BindAffectionMatcher.finish("唔……您给出的时间无法识别，只接受下面的两种格式：\nYYYY年mm月dd日\nYYYY-mm-dd")
+            await BindAffectionMatcher.finish(PROMPT.AffectionFormatInvalid)
     if not check_number(other_qq):
-        await BindAffectionMatcher.finish("绑定失败！对方QQ需要为纯数字！")
+        await BindAffectionMatcher.finish(PROMPT.AffectionUINInvalid)
     ans = await bind_affection(self_qq, self_name, other_qq, other_name, event.group_id, timestamp)
     await BindAffectionMatcher.finish(ans[0])
 

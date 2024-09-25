@@ -121,6 +121,7 @@ class SingleAttr:
 class JX3AttributeV2:
     def __init__(self, data: dict):
         self.data = data
+        self._cached_equips = None 
 
     @property
     def _meta_school(self) -> Kungfu:
@@ -151,7 +152,8 @@ class JX3AttributeV2:
             ]
         )
 
-    async def background(self, school: str):
+    @staticmethod
+    async def background(school: str):
         """
         获取门派背景图。
 
@@ -162,7 +164,7 @@ class JX3AttributeV2:
         if os.path.exists(final_path):
             return final_path
         else:
-            data = (await Request(f"https://cdn.jx3box.com/static/pz/img/overview/horizontal/{self.school}.png").get()).json()
+            data = (await Request(f"https://cdn.jx3box.com/static/pz/img/overview/horizontal/{school}.png").get()).json()
             with open(final_path, mode="wb") as cache:
                 cache.write(data)
             return final_path
@@ -239,6 +241,9 @@ class JX3AttributeV2:
     
     @property
     def equips(self) -> Literal[False] | List[dict]:
+        if self._cached_equips is not None:
+            return self._cached_equips
+        
         equip_map = {
             "帽子": 0, "上衣": 1, "腰带": 2, "护臂": 3, "裤子": 4, 
             "鞋": 5, "项链": 6, "腰坠": 7, "戒指": [8, 9], 
@@ -260,8 +265,9 @@ class JX3AttributeV2:
                 equips_list[equip_map[subkind]] = equip
             elif kind == "武器" or (kind == "任务特殊" and subkind == "活动相关"):
                 equips_list[equip_map["武器"]] = equip
-                
-        return equips_list if self.kungfu in ["问水诀", "山居剑意"] else equips_list[:12]
+        
+        self._cached_equips = equips_list if self.kungfu in ["问水诀", "山居剑意"] else equips_list[:12]
+        return self._cached_equips
 
     @property
     def five_stones(self) -> List[str]:
@@ -405,7 +411,7 @@ class JX3AttributeV2:
         return self.data["data"]["TotalEquipsScore"]
         
 
-async def get_attr_main(server: str, role_name: str) -> str | List[str]:
+async def get_attr_v2(server: str, role_name: str) -> str | List[str]:
     personal_data = await get_personal_data(server, role_name)
     if not personal_data:
         return ["唔……未找到该玩家，请提交角色！\n提交角色 服务器 UID"]
@@ -431,7 +437,7 @@ async def get_attr_main(server: str, role_name: str) -> str | List[str]:
         c2n, c2i = ""
     image = await get_attributes_image_v2(
         kungfu = Kungfu(school),
-        core = attrsObject,
+        school_background = await attrsObject.background(str(attrsObject.kungfu)),
         max_strength = max,
         strength = current,
         equip_list = equips,
@@ -479,7 +485,7 @@ def special_weapon(name: str) -> bool:
 
 async def get_attributes_image_v2(
     kungfu: Kungfu, 
-    core: JX3AttributeV2,
+    school_background: str,
     max_strength: list,
     strength: list, 
     equip_list: list,
@@ -511,7 +517,7 @@ async def get_attributes_image_v2(
         objects = ["外防", "内防", "最大气血值", "破招", "御劲", "闪避", "招架", "拆招", "体质", "加速率", "无双", "加速"]
     else:
         objects = ["N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A"]
-    background = Image.open(await core.background(str(kungfu.school)))
+    background = Image.open(school_background)
     draw = ImageDraw.Draw(background)
     flickering = Image.open(build_path(ASSETS, ["image", "jx3", "attributes", "flicker.png"])).resize((38, 38))
     precious = Image.open(build_path(ASSETS, ["image", "jx3", "attributes", "peerless.png"]))

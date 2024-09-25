@@ -135,12 +135,10 @@ async def zone_achievement(
                             "achievements_v2.css"
                         ]
                     )
-                ).as_uri()
+                ).as_uri(),
+                table_head = table_head,
+                table_body = "\n".join(contents)
             )
-        )
-        html = Template(html).render(
-            table_head = table_head,
-            table_body = "\n".join(contents)
         )
         final_path = await generate(html, "table", False)
         if not isinstance(final_path, str):

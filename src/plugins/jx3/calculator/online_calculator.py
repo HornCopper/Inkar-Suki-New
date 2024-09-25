@@ -14,7 +14,6 @@ from src.config import Config
 from src.utils.database.player import search_player
 from src.plugins.jx3.attributes.v2 import Enchant
 
-import json
 import pydantic
 
 inkarsuki_offical_token = Config.hidden.offcial_token

@@ -1,5 +1,3 @@
-from typing import Optional
-
 from nonebot import on_command
 from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent
@@ -11,7 +9,7 @@ from src.utils.database.operation import set_group_settings
 from src.utils.database.player import get_uid_data
 from src.utils.permission import checker
 
-def bind_srv(group_id: str, server: Optional[str]):
+def bind_srv(group_id: str, server: str | None):
     if not server == "":
         # 当server为空表示要清空
         server_ = Server(server).server

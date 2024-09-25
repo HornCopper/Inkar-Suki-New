@@ -4,12 +4,12 @@ from typing import Any, List
 
 from src.const.jx3.school import School
 from src.const.jx3.server import Server
+from src.const.prompts import PROMPT
 from src.const.path import (
     ASSETS,
     TEMPLATES,
     build_path
 )
-
 from src.utils.database import db
 from src.utils.database.player import search_player
 from src.utils.database.classes import Affections
@@ -35,14 +35,14 @@ async def get_school(name: str, server: str):
 
 async def bind_affection(uin_1: int, name_1: str, uin_2: int, name_2: str, group_id: int, custom_time: int):
     if check_status(uin_1) or check_status(uin_2):
-        return ["唔……您已经绑定情缘了，无法再绑定新的情缘！"]
+        return [PROMPT.AffectionExist]
     server = Server(None, group_id).server
     if not server:
-        return ["绑定失败！请先为群聊绑定服务器！"]
+        return [PROMPT.ServerNotExist]
     school_1 = await get_school(name_1, server)
     school_2 = await get_school(name_2, server)
     if not school_1 or not school_2:
-        return ["绑定失败，对方或者自己的ID无法对应到角色！\n请检查对面或自身角色是否在本群聊绑定的服务器中！"]
+        return [PROMPT.AffectionRoleNotExist]
     new_data = Affections(
         server = server,
         uin_1 = uin_1,
@@ -53,16 +53,16 @@ async def bind_affection(uin_1: int, name_1: str, uin_2: int, name_2: str, group
         school_1 = school_1,
         school_2 = school_2
     )
-    return ["成功绑定情缘！\n可通过“查看情缘证书”生成一张情缘证书图！"]
+    return [PROMPT.AffectionBindComplete]
 
 async def delete_affection(uin: int) -> List[str] | None:
     if not check_status(uin):
-        return ["咱就是说，还没绑定情缘，在解除什么呢？"]
+        return [PROMPT.AffectionUnbindWithNo]
     db.delete(Affections(), "uin_1 = ? OR uin_2 = ?", (uin, uin))
 
 async def generate_affection_image(uin: int):
     if not check_status(uin):
-        return ["咱就是说，还没绑定情缘，在生成什么呢？"]
+        return [PROMPT.AffectionGenerateWithNo]
     current_data: Affections | Any = db.where_one(Affections(), "uin_1 = ? OR uin_2 = ?", (uin, uin), default=None)
     btxbfont = build_path(
         ASSETS,

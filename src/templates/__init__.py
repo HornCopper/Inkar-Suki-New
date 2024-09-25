@@ -1,4 +1,5 @@
 from typing import Literal
+from pathlib import Path
 from jinja2 import Template
 
 from src.const.path import (
@@ -29,6 +30,7 @@ class HTMLSourceCode:
             font_path: str = build_path(ASSETS, ["font", "cutsom.ttf"]),
             footer: str = "严禁将蓉蓉机器人与音卡共存，一经发现永久封禁！蓉蓉是抄袭音卡的劣质机器人！",
             additional_css: str = "",
+            additional_js: Path | None = None,
             **kwargs
     ):
         """
@@ -39,6 +41,7 @@ class HTMLSourceCode:
             font_path (str): 非必需。`HTML`整体字体，不传入则使用`src/assets/font/custom.ttf`。
             footer (str): 非必需。页面最底部的字符串，推荐剑网3模块使用骚话，其他模块使用说明。
             additional_css (str): 额外定义的`CSS`，如果需要使用请提前定义！
+            additional_js (Path, None): 额外定义的`JS`，只支持路径！
             **kwargs (dict)：其他替换参数，按键值对直接进行替换，请确保存在。
         """
         self.name = application_name
@@ -46,6 +49,10 @@ class HTMLSourceCode:
         self.footer = footer
         self.css = additional_css
         self.kwargs = kwargs
+        if additional_js is None:
+            self.js = ""
+        else:
+            self.js = additional_js.as_uri()
 
     def __str__(self) -> str:
         if self.kwargs.get("table_head", None) is not None:
@@ -61,6 +68,7 @@ class HTMLSourceCode:
             bot_name = Config.bot_basic.bot_name_argument,
             app_info = self.name,
             footer_msg = self.footer,
+            js = self.js,
             **self.kwargs
         )
     

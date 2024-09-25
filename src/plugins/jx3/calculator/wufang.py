@@ -19,7 +19,7 @@ async def generate_calculator_img_wufang(server: str, name: str):
         return [PROMPT.PlayerNotExist]
     data = await get_calculated_data(server, name, "无方")
     if not data:
-        return ["唔……无法计算玩家数据！请检查装备、属性、职业！"]
+        return [PROMPT.CalculatorValueInvalid]
     stake_data = data["data"]["木桩计算结果"]
     result = stake_data["秒伤"]
     tables = []

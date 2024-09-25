@@ -138,7 +138,7 @@ async def generate_calculator_img_dujing(server: str, name: str):
     equip_data = (await Request("https://m.pvp.xoyo.com/mine/equip/get-role-equip", params=params).post(tuilan=True)).json()
     kungfu = Kungfu.with_internel_id(equip_data["data"]["Kungfu"]["KungfuID"])
     if kungfu.name != "毒经":
-        return ["唔……门派与计算器不匹配！"]
+        return [PROMPT.CalculatorNotMatch]
     analyzed_data: ExcelRequest = await analyze_attrs(equip_data)
     calculated_data = await get_calculated_data(**(analyzed_data.__dict__))
     tables = []
@@ -159,8 +159,8 @@ async def generate_calculator_img_dujing(server: str, name: str):
             html_type = "jx3",
             html_template = "calculator",
             **{
-                "font": ASSETS + "/font/custom.ttf",
-                "yozai": ASSETS + "/font/Yozai-Medium.ttf",
+                "font": build_path(ASSETS, ["font", "custom.ttf"]),
+                "yozai": build_path(ASSETS, ["font", "Yozai-Medium.ttf"]),
                 "msgbox": Template(msgbox_dujing).render(**{
                     "max": max_dps,
                     "min": min_dps

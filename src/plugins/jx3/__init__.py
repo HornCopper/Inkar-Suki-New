@@ -1,3 +1,4 @@
+from playwright.async_api import Browser
 from nonebot import get_driver
 from nonebot.log import logger
 
@@ -14,6 +15,7 @@ from .parse import (
     parse_data,
     JX3APIOutputMsg
 )
+from .weibo import poll_weibo_api
 
 from .universe import * # 要不你来一个一个导？
 
@@ -71,5 +73,6 @@ async def on_startup():
     headers = {
         "token": Config.jx3.ws.token
     }
-    ws = asyncio.create_task(websocket_client(ws_url, headers))
-    pw = asyncio.create_task(ScreenshotGenerator.launch())
+    asyncio.create_task(websocket_client(ws_url, headers))
+    asyncio.create_task(ScreenshotGenerator.launch())
+    asyncio.create_task(poll_weibo_api(ScreenshotGenerator._browser, "2046281757", interval=600))

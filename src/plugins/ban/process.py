@@ -9,7 +9,7 @@ class Ban:
 
     @property
     def _data(self) -> list:
-        data: List[BannedUser] | Any = db.where_all(BannedUser())
+        data: List[BannedUser] | Any = db.where_all(BannedUser()) or []
         return data
 
     @property

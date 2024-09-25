@@ -24,7 +24,7 @@ def set_group_settings(group_id: int | str, key: str, content: Any) -> bool | No
     db.save(group_data)
 
 def get_groups() -> bool | list:
-    all_db_obj: List[GroupSettings | Any] | None = db.where_all(GroupSettings())
+    all_db_obj: List[GroupSettings | Any] | None = db.where_all(GroupSettings()) or []
     groups = []
     if not isinstance(all_db_obj, list):
         return False

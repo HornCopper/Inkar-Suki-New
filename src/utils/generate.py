@@ -3,7 +3,6 @@ from playwright.async_api import (
     Browser,
     BrowserContext
 )
-from typing import Optional
 from pathlib import Path
 from nonebot.log import logger
 
@@ -59,8 +58,8 @@ class ScreenshotConfig:
         self.output_path = output_path
 
 class ScreenshotGenerator:
-    _browser: Optional[Browser] = None
-    _context: Optional[BrowserContext] = None
+    _browser: Browser | None = None
+    _context: BrowserContext | None = None
 
     @classmethod
     async def launch(cls):

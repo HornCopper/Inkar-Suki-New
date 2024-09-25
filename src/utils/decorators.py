@@ -1,8 +1,9 @@
 from functools import wraps
 from typing import Callable
-from nonebot.adapters.onebot.v11 import Message
+# from nonebot.adapters.onebot.v11 import Message
 
 from src.config import Config
+from src.const.prompts import PROMPT
 
 # def require_argument(require_non_empty: bool = True):
 #     """
@@ -55,5 +56,7 @@ def token_required(func) -> Callable:
     @wraps(func)
     def wrapper(*args, **kwargs):
         token = Config.jx3.api.token
+        if token == "":
+            return PROMPT.NoToken
         return func(token = token, *args, **kwargs)
     return wrapper

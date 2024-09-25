@@ -77,7 +77,7 @@ class Request:
             params (dict): 请求体，可不携带`ts`字段。
             ticket (str): 推栏`Token`，需要通过一些方法获得，由装饰器进行填入，**调用时不要传入`ticket`**。
         """
-        if params is None:
+        if params is {}:
             params = {"ts": gen_ts()}
         if "ts" not in params:
             params["ts"] = gen_ts()

@@ -10,7 +10,7 @@ from src.utils.database.classes import (
 
 from src.const.path import DATA, build_path
 
-db = Database(build_path(DATA, ["global", "Snowykami.db"]))
+db = Database(build_path(DATA, ["Snowykami.db"]))
 
 db.auto_migrate(
     Account(),

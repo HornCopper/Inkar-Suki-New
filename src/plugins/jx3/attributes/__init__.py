@@ -32,7 +32,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     ServerInstance = Server(server, event.group_id)
     if not ServerInstance.server:
         await AttributeV2Matcher.finish(PROMPT.ServerNotExist)
-    data = await get_attr_main(ServerInstance.server, id)
+    data = await get_attr_v2(ServerInstance.server, id)
     if isinstance(data, list):
         await AttributeV2Matcher.finish(data[0])
     else:

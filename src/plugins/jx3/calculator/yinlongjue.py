@@ -6,7 +6,7 @@
 务必获得凌雪阁计算器作者同意后再使用！！！！！
 """
 
-from typing import Tuple, Literal, List, Union, Dict, Callable
+from typing import Tuple, Literal, List, Dict, Callable
 from jinja2 import Template
 from pathlib import Path
 
@@ -29,7 +29,7 @@ def generate_params(
     set_list: List[str | None],
     special_equip: List[None | str]
 ) -> dict:
-    enchant: List[Union[int, str]] = [12206, 12205, 12202, 12204, 12203]
+    enchant: List[int | str] = [12206, 12205, 12202, 12204, 12203]
     for num in range(5):
         if not input_enchant[num]:
             enchant[num] = ""

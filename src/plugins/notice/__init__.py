@@ -1,4 +1,4 @@
-from typing import Union, Any
+from typing import Any
 
 from nonebot import on_notice, on_command, on_request
 from nonebot.adapters import Message
@@ -45,7 +45,7 @@ async def _(bot: Bot, event: GroupIncreaseNoticeEvent):
     new_settings = GroupSettings(group_id=group_id)
     db.save(new_settings)
 
-async def notice_and_ban(bot: Bot, event: Union[GroupDecreaseNoticeEvent, GroupBanNoticeEvent], action: str):
+async def notice_and_ban(bot: Bot, event: GroupDecreaseNoticeEvent | GroupBanNoticeEvent, action: str):
     message = f"唔……{Config.bot_basic.bot_name}在群聊（{event.group_id}）被{action}啦！\n操作者：{event.operator_id}，已自动封禁！"
     notice = notice_to
     await bot.call_api("send_group_msg", group_id=int(notice[str(event.self_id)]), message=message)
@@ -92,7 +92,7 @@ async def _(bot: Bot, event: GroupRequestEvent):
             "flag": flag,
             "time": time
         }
-        applications_data: Union[ApplicationsList, Any] = db.where_one(ApplicationsList(), default=ApplicationsList())
+        applications_data: ApplicationsList | Any = db.where_one(ApplicationsList(), default=ApplicationsList())
         applications_list = applications_data.applications_list
         if new in applications_list:
             return

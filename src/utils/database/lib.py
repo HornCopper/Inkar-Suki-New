@@ -3,7 +3,7 @@
 原作者：@Snowykami
 本文件按原始仓库：LiteyukiStudio/LiteyukiBot
 """
-from typing import Any, Callable, List, Optional, TypeVar
+from typing import Any, Callable, List, TypeVar
 from packaging.version import parse
 from pydantic import BaseModel
 
@@ -18,8 +18,8 @@ T = TypeVar("T")
 NoneType = type(None)
 
 class LiteModel(BaseModel):
-    TABLE_NAME: Optional[str] = None
-    id: Optional[int] = None
+    TABLE_NAME: str | None = None
+    id: int | None = None
 
     def dump(self, *args, **kwargs):
         
