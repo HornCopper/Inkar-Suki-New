@@ -1,9 +1,13 @@
 from functools import wraps
 from typing import Callable
+from nonebot.log import logger
 # from nonebot.adapters.onebot.v11 import Message
 
 from src.config import Config
 from src.const.prompts import PROMPT
+from src.utils.exceptions import ConfigurationException
+
+import time
 
 # def require_argument(require_non_empty: bool = True):
 #     """
@@ -58,5 +62,19 @@ def token_required(func) -> Callable:
         token = Config.jx3.api.token
         if token == "":
             return PROMPT.NoToken
+        if token == "" and Config.jx3.api.enable:
+            raise ConfigurationException("Cannot enable `JX3API` with a null `token`!")
         return func(token = token, *args, **kwargs)
+    return wrapper
+
+def time_record(func):
+    """
+    对函数执行时间进行计时的装饰器。
+    """
+    def wrapper(*args, **kwargs):
+        time_start = time.time()
+        result = func(*args, **kwargs)
+        time_end = time.time()
+        logger.info(f"{func.__name__} 执行时间: {time_end - time_start:.6f} 秒")
+        return result
     return wrapper

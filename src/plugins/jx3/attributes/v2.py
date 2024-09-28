@@ -3,7 +3,6 @@ from PIL import Image, ImageDraw, ImageFont
 from typing import Literal, Tuple, List
 
 from src.config import Config
-from src.const.prompts import PROMPT
 from src.const.jx3.kungfu import Kungfu
 from src.const.jx3.server import Server
 from src.const.path import (
@@ -164,9 +163,8 @@ class JX3AttributeV2:
         if os.path.exists(final_path):
             return final_path
         else:
-            data = (await Request(f"https://cdn.jx3box.com/static/pz/img/overview/horizontal/{school}.png").get()).json()
-            with open(final_path, mode="wb") as cache:
-                cache.write(data)
+            data = (await Request(f"https://cdn.jx3box.com/static/pz/img/overview/horizontal/{school}.png").get()).content
+            write(final_path, data, "wb")
             return final_path
         
     @property
@@ -237,7 +235,9 @@ class JX3AttributeV2:
         if self._meta_school.base is not None:
             for attr_type in attr_types:
                 result.append(self._panel_type(attr_type).value)
-        return ["N/A"] * 12
+            return result
+        else:
+            return ["N/A"] * 12
     
     @property
     def equips(self) -> Literal[False] | List[dict]:
@@ -274,11 +274,11 @@ class JX3AttributeV2:
         results = []
         equips = self.equips
         if not equips:
-            return [build_path(ASSETS, ["image", "jx3", "attributes", "0.png"])] * (18 if self.kungfu != "问水诀" else 21)
+            return [build_path(ASSETS, ["image", "jx3", "attributes", "wuxingshi", "0.png"])] * (18 if self.kungfu != "问水诀" else 21)
         for equip in equips:
             if isinstance(equip, dict) and equip["Icon"]["SubKind"] != "戒指":
                 five_stones_list = equip.get("FiveStone", [])
-                results.extend([build_path(ASSETS, ["image", "jx3", "attributes", str(b["Level"]) + ".png"]) for b in five_stones_list])
+                results.extend([build_path(ASSETS, ["image", "jx3", "attributes", "wuxingshi", str(b["Level"]) + ".png"]) for b in five_stones_list])
         return results
     
     @property
@@ -308,6 +308,7 @@ class JX3AttributeV2:
         for each_equip in equips:
             if "WPermanentEnchant" in each_equip:
                 result.append(each_equip["WPermanentEnchant"]["Name"])
+                continue
             result.append("")
         return result
     
@@ -331,6 +332,7 @@ class JX3AttributeV2:
                         enchant_name = Enchant(int(equip["Quality"])).name
                         if enchant_name is not None:
                             result.append(enchant_name + "·" + type_ + "·" + {"帽子": "帽","上衣": "衣","腰带": "腰","护臂": "腕","鞋": "鞋"}[location])
+                            continue
                     result.append("")
         return result
     
@@ -360,7 +362,7 @@ class JX3AttributeV2:
     
     def _parse_attr(self, data: dict) -> str:
         msg = ""
-        for i in data:
+        for i in data["ModifyType"]:
             content = i["Attrib"]["GeneratedMagic"].split("提高")
             if len(content) == 1:
                 content = content[0].split("增加")
@@ -434,10 +436,10 @@ async def get_attr_v2(server: str, role_name: str) -> str | List[str]:
         c2n, c2i = color_stones[1]
     else:
         c1n, c1i = color_stones[0]
-        c2n, c2i = ""
+        c2n, c2i = "", ""
     image = await get_attributes_image_v2(
-        kungfu = Kungfu(school),
-        school_background = await attrsObject.background(str(attrsObject.kungfu)),
+        kungfu = Kungfu(attrsObject.kungfu),
+        school_background = await attrsObject.background(str(attrsObject.school)),
         max_strength = max,
         strength = current,
         equip_list = equips,
@@ -453,14 +455,15 @@ async def get_attr_v2(server: str, role_name: str) -> str | List[str]:
         color_stone_name = c1n,
         attribute_values = attrsObject.attr_values,
         color_stone_icon_2 = c2i,
-        color_stone_name_2 = c2n
+        color_stone_name_2 = c2n,
+        attr_types = attrsObject.attr_types
     )
     return image
 
 
 async def local_save(image_url: str) -> str:
     file_name = image_url.split("/")[-1].split("?")[0]
-    if image_url.endswith("unknown.png") != -1:
+    if image_url.endswith("unknown.png"):
         return build_path(ASSETS, ["image", "jx3", "attributes", "unknown.png"])
     final_path = build_path(ASSETS, ["image", "jx3", "attributes", "equips"], end_with_slash=True) + file_name
     if os.path.exists(final_path):
@@ -470,8 +473,7 @@ async def local_save(image_url: str) -> str:
             main = (await Request(image_url).get()).content
         except:
             return image_url
-        with open(final_path, mode="wb") as cache:
-            cache.write(main)
+        write(final_path, main, "wb")
         return final_path
 
 
@@ -484,7 +486,7 @@ def special_weapon(name: str) -> bool:
 
 
 async def get_attributes_image_v2(
-    kungfu: Kungfu, 
+    kungfu: Kungfu,
     school_background: str,
     max_strength: list,
     strength: list, 
@@ -501,22 +503,14 @@ async def get_attributes_image_v2(
     color_stone_name: str, 
     attribute_values: list, 
     color_stone_name_2: str, 
-    color_stone_icon_2: str
+    color_stone_icon_2: str,
+    attr_types: List[str]
 ):
-    attr = kungfu.base
+    print(locals())
     syst_bold = build_path(ASSETS, ["font", "syst-bold.ttf"])
     syst_mid = build_path(ASSETS, ["font", "syst-mid.ttf"])
     msyh = build_path(ASSETS, ["font", "msyh.ttf"])
     calibri = build_path(ASSETS, ["font", "calibri.ttf"])
-    if attr in ["根骨", "元气", "力道", "身法"]:
-        objects = ["面板攻击", "基础攻击", "会心", "会心效果", "加速", attr, "破防", "无双", "破招", "最大气血值", "御劲", "化劲"]
-    elif attr == "治疗":
-        objects = ["面板治疗量", "基础治疗量", "会心", "会心效果", "加速",
-                   "根骨", "外防", "内防", "破招", "最大气血值", "御劲", "化劲"]
-    elif attr == "防御":
-        objects = ["外防", "内防", "最大气血值", "破招", "御劲", "闪避", "招架", "拆招", "体质", "加速率", "无双", "加速"]
-    else:
-        objects = ["N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A"]
     background = Image.open(school_background)
     draw = ImageDraw.Draw(background)
     flickering = Image.open(build_path(ASSETS, ["image", "jx3", "attributes", "flicker.png"])).resize((38, 38))
@@ -530,7 +524,7 @@ async def get_attributes_image_v2(
     background.alpha_composite(Image.open(str(kungfu.icon)).resize((50, 50)), (61, 62))
 
     # 武器图标
-    if kungfu not in ["问水诀", "山居剑意"]:
+    if kungfu.name not in ["问水诀", "山居剑意"]:
         if equip_icon[11] != "":
             background.alpha_composite(Image.open(await local_save(equip_icon[11])).resize((38, 38)), (708, 587))
             if max_strength[11] in ["3", "4", "8"] or special_weapon(equip_list[11]):
@@ -591,7 +585,7 @@ async def get_attributes_image_v2(
     # 装备精炼
     init = 47
     range_time = 11
-    if kungfu in ["问水诀", "山居剑意"]:
+    if kungfu.name in ["问水诀", "山居剑意"]:
         range_time = range_time + 1
     for i in range(range_time):
         if special_weapon(equip_list[i]):
@@ -638,7 +632,7 @@ async def get_attributes_image_v2(
                  (385, 303), (514, 303), (127, 380), (258, 380), (385, 380), (514, 380)]
     range_time = 12
     for i in range(range_time):
-        draw.text(positions[i], objects[i], fill=(255, 255, 255),
+        draw.text(positions[i], attr_types[i], fill=(255, 255, 255),
                   font=ImageFont.truetype(syst_bold, size=20), anchor="mm")
 
     # 面板数值
@@ -716,7 +710,7 @@ async def get_attributes_image_v2(
     positions = [(940, 65), (960, 65), (940, 114), (960, 114), (940, 163), (960, 163), (940, 212), (960, 212), (940, 261),
                  (960, 261), (940, 310), (960, 310), (940, 359), (940, 408), (940, 555), (940, 604), (960, 604), (980, 604)]
     range_time = 18
-    if kungfu in ["问水诀", "山居剑意"]:
+    if kungfu.name in ["问水诀", "山居剑意"]:
         range_time = range_time + 3
         positions.append((940, 653))
         positions.append((960, 653))

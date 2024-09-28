@@ -178,6 +178,9 @@ src/utils/database/uid.py
 
 # Configuration file
 src/config/config.yml
+.env/dev
 
 # Data files
-src/data
+src/data/
+src/cache/
+src/assets/image/jx3/attributes/school_bg

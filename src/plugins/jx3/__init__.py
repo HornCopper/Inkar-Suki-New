@@ -75,4 +75,5 @@ async def on_startup():
     }
     asyncio.create_task(websocket_client(ws_url, headers))
     asyncio.create_task(ScreenshotGenerator.launch())
-    asyncio.create_task(poll_weibo_api(ScreenshotGenerator._browser, "2046281757", interval=600))
+    if Config.jx3.api.weibo:
+        asyncio.create_task(poll_weibo_api("2046281757", interval=600))

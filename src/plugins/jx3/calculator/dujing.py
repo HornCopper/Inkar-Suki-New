@@ -46,7 +46,7 @@ async def get_calculated_data(
         "suit": suit,
         "qixue": qixue
     }
-    data = (await Request("http://117.50.178.116:2333/calculator_dj", params=params, headers={"token": inkarsuki_offical_token}).post(timeout=12000)).json()
+    data = (await Request("http://206.237.21.122:25765/calculator_dj", params=params, headers={"token": inkarsuki_offical_token}).post(timeout=12000)).json()
     return data
 
 def check_set_effects(equip_list):

@@ -22,7 +22,9 @@ jx3: # 剑网3 相关配置
         url: "" # JX3API 地址(不带斜杠)
         xsk_secret: "" # X-SK 密钥
         sign_secret: "" # Sign 密钥
-        enable: False
+        enable: False # 是否启用 JX3API
+        weibo: False # 是否启用 轮询微博
+        # 注意！轮询微博使用浏览器模拟请求，占用可能会很高，请谨慎开启！
     ws:
         url: "" # JX3API WebSocket 地址
         token: "" # JX3API WebSocket Token

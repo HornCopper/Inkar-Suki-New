@@ -5,11 +5,11 @@ from nonebot.adapters.onebot.v11 import GroupMessageEvent
 
 from .api import pendant
 
-pendents = on_command("jx3_pendents", aliases={"挂件"}, force_whitespace=True, priority=5)
+PendentMatcher = on_command("jx3_pendents", aliases={"挂件"}, force_whitespace=True, priority=5)
 
 
-@pendents.handle()
+@PendentMatcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
-    await pendents.finish(await pendant(name=args.extract_plain_text()))
+    await PendentMatcher.finish(await pendant(name=args.extract_plain_text()))

@@ -59,3 +59,17 @@ def check_number(value: str | int) -> bool:
     if isinstance(value, int):
         return True
     return value.isdecimal()
+
+def extract_numbers(string: str):
+    """
+    从字符串中提取数字。
+
+    Args:
+        string (str): 源字符串。
+
+    Returns:
+        number (List[int]): 字符串包含的数字。
+    """
+    pattern = r"\d+"
+    numbers = re.findall(pattern, string)
+    return [int(num) for num in numbers]

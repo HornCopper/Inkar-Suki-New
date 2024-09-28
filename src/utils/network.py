@@ -1,3 +1,4 @@
+from typing import overload
 from urllib.request import urlopen
 
 from src.utils.exceptions import RequestDataException
@@ -20,14 +21,17 @@ class Request:
         self.headers = headers 
         self.params = params
 
-    async def get(self, **kwargs) -> httpx.Response:
+    async def get(self, expire_at: int = 0, timeout = 20, **kwargs) -> httpx.Response:
         """
         发送`GET`请求。
+
+        Args:
+            expire_at (int): 过期时间戳，在过期时间戳到达之前请求请求同一个地址均会使用第一次返回。
         """
         if isinstance(self.params, str):
             raise RequestDataException("Method `GET` not accept argument `params` with type `str`!")
         async with httpx.AsyncClient(follow_redirects=True, verify=False) as client:
-            response = await client.get(self.url, params=self.params, headers=self.headers, **kwargs)
+            response = await client.get(self.url, params=self.params, headers=self.headers, timeout=timeout, **kwargs)
             return response
     
     async def post(self, tuilan: bool = False, timeout: int = 600) -> httpx.Response:

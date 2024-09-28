@@ -7,17 +7,23 @@ from src.const.path import (
     build_path
 )
 
-from .constant import kungfu_aliases_data, kungfu_colors_data, kungfu_internel_id_data, school_aliases_data
+from .constant import (
+    kungfu_aliases_data, 
+    kungfu_colors_data, 
+    kungfu_internel_id_data,
+    kungfu_baseattr_data, 
+    school_aliases_data
+)
 
 class Kungfu:
     kungfu_aliases: Dict[str, List[str]] = kungfu_aliases_data
     kungfu_colors_data: Dict[str, str] = kungfu_colors_data
     kungfu_internel_id: Dict[str, str] = kungfu_internel_id_data
-    kungfu_baseattr: Dict[str, List[str]]
+    kungfu_baseattr: Dict[str, List[str]] = kungfu_baseattr_data
 
     school_aliases: Dict[str, List[str]] = school_aliases_data
 
-    def __init__(self, kungfu_name: str = ""):
+    def __init__(self, kungfu_name: str | None = ""):
         self.kungfu_name = kungfu_name
 
     @classmethod
@@ -61,7 +67,15 @@ class Kungfu:
         心法图标。
         """
         if self.name is None:
-            return
+            return build_path(
+                ASSETS,
+                [
+                    "image",
+                    "jx3",
+                    "kungfu"
+                ],
+                end_with_slash=True
+            ) + "通用.png"
         return build_path(
             ASSETS,
             [

@@ -23,7 +23,7 @@ class Server:
     @property
     def server(self) -> str | None:
         if self._server is None and self.group_id is not None:
-            final_server = get_group_settings(self.group_id)
+            final_server = get_group_settings(self.group_id, "server") or None
         elif self._server is not None:
             final_server = self.server_raw
             if final_server == None and self.group_id:

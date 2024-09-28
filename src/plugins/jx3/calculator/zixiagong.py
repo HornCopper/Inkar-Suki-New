@@ -198,7 +198,7 @@ async def get_calculated_img_zixiagong(server: str, name: str):
         "qixue": qixue,
         "mode": mode
     }
-    calculated_data = (await Request("http://117.50.178.116:2333/calculator_zxg", params=params, headers={"token": inkarsuki_offical_token}).post(timeout=10000)).json()
+    calculated_data = (await Request("http://206.237.21.122:25765/calculator_zxg", params=params, headers={"token": inkarsuki_offical_token}).post(timeout=10000)).json()
     calculated_data = json.loads(calculated_data)
     dps = calculated_data["data"]["result"]
     bad_dps = calculated_data["data"]["bad_result"]

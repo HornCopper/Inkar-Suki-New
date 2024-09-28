@@ -9,6 +9,7 @@ from src.utils.time import Time
 from src.utils.generate import generate
 from src.templates import SimpleHTML
 
+from ._parse import coin_to_image, calculator_price
 from ._template import template_msgbox, template_table
 
 import datetime
@@ -272,7 +273,7 @@ async def get_trade_image_allserver(name: str):
         return ["唔……该物品全服均没有数据！"]
     msgbox = Template(template_msgbox).render(
         low=coin_to_image(str(calculator_price(final_lowest))),
-        equal=coin_to_image(str(calculator_price(final_avg))),
+        avg=coin_to_image(str(calculator_price(final_avg))),
         high=coin_to_image(str(calculator_price(final_highest)))
     )
     html = str(
@@ -290,48 +291,3 @@ async def get_trade_image_allserver(name: str):
     if not isinstance(final_path, str):
         return
     return Path(final_path).as_uri()
-
-def coin_to_image(rawString: str):
-    brick = build_path(ASSETS, ["image", "jx3", "trade", "brick.png"])
-    gold = build_path(ASSETS, ["image", "jx3", "trade", "gold.png"])
-    silver = build_path(ASSETS, ["image", "jx3", "trade", "silver.png"])
-    copper = build_path(ASSETS, ["image", "jx3", "trade", "copper.png"])
-    to_replace = [["砖", f"<img src=\"{brick}\">"], ["金", f"<img src=\"{gold}\">"], ["银", f"<img src=\"{silver}\">"], ["铜", f"<img src=\"{copper}\">"]]
-    for waiting in to_replace:
-        rawString = rawString.replace(waiting[0], waiting[1])
-    processedString = rawString
-    return processedString
-
-def calculator_price(price: int):
-    if 1 <= price <= 99:  # 铜
-        return f"{price} 铜"
-    elif 100 <= price <= 9999:  # 银
-        silver = price // 100
-        copper = price % 100
-        if copper == 0:
-            return f"{silver} 银"
-        else:
-            return f"{silver} 银 {copper} 铜"
-    elif 10000 <= price <= 99999999:  # 金
-        gold = price // 10000
-        silver = (price % 10000) // 100
-        copper = price % 100
-        result = f"{gold} 金"
-        if silver:
-            result += f" {silver} 银"
-        if copper:
-            result += f" {copper} 铜"
-        return result
-    elif price >= 100000000:  # 砖
-        brick = price // 100000000
-        gold = (price % 100000000) // 10000
-        silver = (price % 10000) // 100
-        copper = price % 100
-        result = f"{brick} 砖"
-        if gold:
-            result += f" {gold} 金"
-        if silver:
-            result += f" {silver} 银"
-        if copper:
-            result += f" {copper} 铜"
-        return result

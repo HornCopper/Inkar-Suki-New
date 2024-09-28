@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Literal, overload
 
 def read(path: str) -> str:
     """
@@ -17,8 +18,15 @@ def read(path: str) -> str:
     except FileNotFoundError:
         return ""
 
+@overload
+def write(path: str, content: str, mode: Literal["w"] = "w") -> bool:
+    ...
 
-def write(path: str, content: str) -> bool:
+@overload
+def write(path: str, content: bytes, mode: Literal["wb"] = "wb") -> bool:
+    ...
+
+def write(path: str, content: str | bytes, mode: Literal["w", "wb"] = "w") -> bool:
     """
     向文件写入字符串数据。如果文件不存在则自动创建。
 
@@ -29,6 +37,6 @@ def write(path: str, content: str) -> bool:
     p = Path(path).parent
     if not p.exists():
         p.mkdir(parents=True)
-    with open(path, mode="w", encoding="utf-8") as cache:
+    with open(path, mode=mode, encoding="utf-8" if mode != "wb" else None) as cache:
         cache.write(content)
     return True

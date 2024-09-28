@@ -5,9 +5,11 @@ from playwright.async_api import (
 )
 from pathlib import Path
 from nonebot.log import logger
+from typing import Any
 
+from src.const.path import CACHE, build_path
 from src.utils.exceptions import BrowserNotInitializedException
-from src.const.path import CACHE
+from src.utils.decorators import time_record
 
 import uuid
 import asyncio
@@ -58,40 +60,38 @@ class ScreenshotConfig:
         self.output_path = output_path
 
 class ScreenshotGenerator:
-    _browser: Browser | None = None
-    _context: BrowserContext | None = None
+    _browser: Browser | Any = None
+    _context: BrowserContext | Any = None
+    _playwright: Any | None = None
+
 
     @classmethod
     async def launch(cls):
-        """
-        启动浏览器实例，若已经启动则不会重复启动。
-        """
         if cls._browser is None:
-            async with async_playwright() as p:
-                cls._browser = await p.chromium.launch(headless=True)
-                cls._context = await cls._browser.new_context()
-                logger.info("Playwright 已载入")
+            cls._playwright = await async_playwright().start()
+            cls._browser = await cls._playwright.chromium.launch(headless=True)
+            cls._context = await cls._browser.new_context()
+            logger.info("Playwright 已载入")
 
     @classmethod
     async def close(cls):
-        """
-        关闭浏览器和上下文。
-        """
         if cls._context:
             await cls._context.close()
             cls._context = None
         if cls._browser:
             await cls._browser.close()
+            await cls._playwright.stop() # type: ignore
             cls._browser = None
+            cls._playwright = None
 
     async def generate(self, config: ScreenshotConfig, page_source: str):
         """
         根据配置生成截图。
         """
-        if self._context is None:
+        if self._browser is None or self._context is None:
             raise BrowserNotInitializedException()
 
-        page = await self._context.new_page()
+        page = await self._browser.new_page()
         await page.goto(page_source)  # 使用 page_source 加载页面
 
         # 应用自定义的 CSS 和 JS
@@ -133,6 +133,7 @@ class ScreenshotGenerator:
             await page.screenshot(path=output_path, full_page=config.full_screen)
         return output_path
 
+@time_record
 async def generate(
     source: str,
     locate: str = "",
@@ -167,7 +168,15 @@ async def generate(
     is_html = "<html" in source.lower()  # 如果是 HTML 源代码
 
     if is_html:
-        page_source = "data:text/html," + source  # 使用 data URI 加载 HTML 源代码
+        # 创建缓存文件路径
+        html_file_path = build_path(CACHE, [get_uuid() + ".html"])
+        
+        # 将 HTML 源代码写入缓存文件
+        with open(html_file_path, "w", encoding="utf-8") as f:
+            f.write(source)
+        
+        # 将文件路径作为 page_source 传递
+        page_source = Path(html_file_path).as_uri()
     elif web:
         page_source = source  # 作为 URL 加载
     elif file_path:

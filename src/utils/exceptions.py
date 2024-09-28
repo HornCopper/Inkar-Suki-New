@@ -22,3 +22,10 @@ class QixueDataUnavailable(Exception):
     没有任何可用的奇穴数据。
     """
     ...
+
+class ConfigurationException(Exception):
+    """
+    配置文件有问题。
+
+    例如启用`JX3API`但没有给出`Token`。
+    """

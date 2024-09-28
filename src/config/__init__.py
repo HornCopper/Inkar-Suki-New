@@ -27,6 +27,7 @@ class Jx3API(BaseModel):
     xsk_secret: str = ""
     sign_secret: str = ""
     enable: bool = False
+    weibo: bool = False
 
 class Jx3WS(BaseModel):
     url: str

@@ -25,9 +25,9 @@ template_table = """
 
 template_wujia = """
 <tr>
-    <td>$date</td>
-    <td>$server</td>
-    <td>$price</td>
+    <td>{{ date }}</td>
+    <td>{{ server }}</td>
+    <td>{{ price }}</td>
 </tr>"""
 
 headers = {

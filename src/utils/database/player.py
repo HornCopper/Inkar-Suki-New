@@ -67,7 +67,7 @@ class Player:
         return {"code": 200, "data": self.__dict__}
 
 async def search_player(role_name: str = "", role_id: str = "", server_name: str = "") -> Player:
-    player_data = db.where_one(RoleData(), "roleName = ? OR roleId = ? AND serverName = ?", role_name, role_id, server_name, default=None)
+    player_data = db.where_one(RoleData(), "(roleName = ? OR roleId = ?) AND serverName = ?", role_name, role_id, server_name, default=None)
     if player_data is None:
         uid = await get_uid(roleName=role_name, serverName=server_name)
         if uid == None:

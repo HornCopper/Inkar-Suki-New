@@ -126,7 +126,7 @@
 
         @font-face {
             font-family: Harmony;
-            src: url("$customfont");
+            src: url("{{ font }}");
         }
 
         body {
@@ -139,10 +139,10 @@
 
 <body>
     <div class="header">
-        <img src="$item_image" alt="Header Image">
+        <img src="{{ item_image }}" alt="Header Image">
         <div class="description">
-            <p><span style="font-size:30px">$item_name</span>（$item_alias）</p>
-            <p>$custom_msg</p>
+            <p><span style="font-size:30px">{{ item_name }}</span>（{{ item_alias }}）</p>
+            <p>{{ custom_msg }}</p>
             <p>数据来源：&copy; 爱剑三<br>图片生成：&copy; Inkar Suki</p>
             <table class="data-table">
                 <tr>
@@ -153,11 +153,11 @@
                     <th>发行原价</th>
                 </tr>
                 <tr>
-                    <td>$publish_time</td>
-                    <td>$publish_count</td>
-                    <td>$publish_remain</td>
-                    <td>$binding_time</td>
-                    <td>$publish_price</td>
+                    <td>{{ publish_time }}</td>
+                    <td>{{ publish_count }}</td>
+                    <td>{{ publish_remain }}</td>
+                    <td>{{ binding_time }}</td>
+                    <td>{{ publish_price }}</td>
                 </tr>
             </table>
         </div>
@@ -168,8 +168,7 @@
             <div class="section-title">电信区</div>
             <div class="section-content">
                 <table class="data-table">
-
-                    $电信一区_data
+                    {{ aijx3_data["电信一区"] or "(｡•́︿•̀｡) 该大区目前没有数据" }}
                 </table>
             </div>
         </div>
@@ -178,17 +177,16 @@
             <div class="section-title">双线区</div>
             <div class="section-content">
                 <table class="data-table">
-
-                    $双线一区_data
+                    {{ aijx3_data["双线一区"] or "(｡•́︿•̀｡) 该大区目前没有数据" }}
                 </table>
             </div>
         </div>
+
         <div class="section">
             <div class="section-title">无界区</div>
             <div class="section-content">
                 <table class="data-table">
-
-                    $无界区_data
+                    {{ aijx3_data["无界区"] or "(｡•́︿•̀｡) 该大区目前没有数据" }}
                 </table>
             </div>
         </div>
@@ -197,11 +195,11 @@
             <div class="section-title">万宝楼·在售</div>
             <div class="section-content">
                 <table class="data-table">
-
-                    $wbl_data
+                    {{ wanbaolou }}
                 </table>
             </div>
         </div>
+
     </div>
 
     <div class="chart-container">
@@ -218,7 +216,7 @@
                 trigger: "axis"
             },
             legend: {
-                data: ["$item_name 近3月"],
+                data: ["{{ item_name }} 近3月"],
                 textStyle: {
                     color: "#000000",
                     fontSize: 14
@@ -227,7 +225,7 @@
             xAxis: {
                 type: "category",
                 boundaryGap: false,
-                data: $dates,
+                data: {{ dates }},
                 axisLabel: {
                     color: "#000000",
                     fontSize: 14
@@ -240,14 +238,14 @@
                     color: "#000000",
                     fontSize: 14
                 },
-                max: $max,
-                min: $min
+                max: {{ max }},
+                min: {{ min }}
             },
             series: [
                 {
-                    name: "$item_name 近3月",
+                    name: "{{ item_name }} 近3月",
                     type: "line",
-                    data: $values,
+                    data: {{ values }},
                     smooth: true,
                     itemStyle: {
                         color: "#ff7043"
