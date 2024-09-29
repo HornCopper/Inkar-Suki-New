@@ -7,9 +7,9 @@ from src.const.prompts import PROMPT
 from src.const.jx3.server import Server
 from src.utils.network import Request
 
-from .chutian import *
-from .yuncong import *
-from .zhue import *
+from .chutian import get_chutian_image
+from .yuncong import get_yuncong_image
+from .zhue import get_zhue_image
 
 ChutianMatcher = on_command("jx3_chutian", aliases={"楚天社"}, force_whitespace=True, priority=5)
 
@@ -27,7 +27,7 @@ YuncongMatcher = on_command("jx3_yuncong", aliases={"云从社"}, force_whitespa
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() != "":
         return
-    image = await getYuncongImg()
+    image = await get_yuncong_image()
     if isinstance(image, str):
         await YuncongMatcher.finish(ms.image(Request(image).local_content))
 
@@ -39,6 +39,6 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if serverInstance.server is None:
         await ZhueMatcher.finish(PROMPT.ServerNotExist)
     else:
-        image = await getZhueRecord(serverInstance.server)
+        image = await get_zhue_image(serverInstance.server)
         if isinstance(image, str):
             await ZhueMatcher.finish(ms.image(Request(image).local_content))

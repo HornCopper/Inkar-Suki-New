@@ -3,7 +3,7 @@ from typing import Any
 from nonebot import on_command
 from nonebot.adapters import Message, Bot
 from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageEvent
-from nonebot.params import CommandArg, Arg
+from nonebot.params import CommandArg, Arg, RawCommand
 
 from src.config import Config
 from src.const.path import (
@@ -16,6 +16,8 @@ from src.utils.permission import checker, error
 from src.utils.database import db
 from src.utils.database.classes import GroupSettings, Account
 from src.utils.database.operation import get_groups
+from src.utils.message import post_process
+from src.utils.exceptions import ConnectTimeout
 
 from ._message import leave_msg
 
@@ -168,4 +170,15 @@ async def _(bot: Bot, event: MessageEvent, full_argument: Message = CommandArg()
     data: Account | Any = db.where_one(Account(), "user_id = ?", int(user_id), default=Account(user_id=int(user_id)))
     raw_permission = data.permission
     data.permission = int(level)
+    db.save(data)
     await AdminMatcher.finish(f"用户（{user_id}）的权限等级已变更！\n{raw_permission} -> {level}")
+
+@post_process
+async def _(bot: Bot, event: MessageEvent, exception: None | Exception, cmd = RawCommand()):
+    if cmd == None:
+        return
+    if exception:
+        if isinstance(exception, ConnectTimeout):
+            return # 不回了爱咋咋地
+        if isinstance(event, GroupMessageEvent):
+            await bot.call_api("send_group_msg", group_id=event.group_id, message=f"呜……音卡处理消息中遇到了代码错误，请将本消息告知开发者！\n{exception.__class__}: {exception}\n原始命令：\n{event.raw_message}")

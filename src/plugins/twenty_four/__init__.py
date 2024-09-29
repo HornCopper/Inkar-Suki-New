@@ -6,7 +6,12 @@ from nonebot.typing import T_State
 
 from src.accounts.manage import AccountManage
 
-from .process import *
+from .process import (
+    find_solution, 
+    check_valid, 
+    calc, 
+    contains_all_numbers
+)
 
 import random
 

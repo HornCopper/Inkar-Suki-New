@@ -1,7 +1,7 @@
 from src.config import Config
 from src.utils.network import Request
 
-async def exam_(question):
+async def get_exam_answer(question):
     def qa(q, a):
         return f"问题：{q}\n答案：{a}"
     full_link = f"{Config.jx3.api.url}/data/exam/answer?match={question}"

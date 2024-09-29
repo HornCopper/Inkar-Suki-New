@@ -1,4 +1,4 @@
-from typing import Tuple, List
+from typing import Tuple, List, Dict
 from pathlib import Path
 from PIL import Image, ImageFont, ImageDraw
 
@@ -11,8 +11,7 @@ from src.utils.typing import override
 from src.plugins.jx3.attributes.v2 import (
     local_save,
     special_weapon,
-    JX3AttributeV2,
-    SingleAttr
+    JX3AttributeV2
 )
 
 import json
@@ -25,7 +24,7 @@ async def get_recommended_equips_list(forceId: str, condition: list) -> Tuple[li
         "cursor": 0,
         "matchSeasonId": "6629cd12ba3129001275fc58"
     }
-    source_data = (await Request(url="https://m.pvp.xoyo.com/socialgw/dynamic/equip/query", params=params).post(tuilan=True)).json()
+    source_data = (await Request("https://m.pvp.xoyo.com/socialgw/dynamic/equip/query", params=params).post(tuilan=True)).json()
     data = []
     name = []
     tag = []
@@ -39,47 +38,59 @@ async def get_recommended_equips_list(forceId: str, condition: list) -> Tuple[li
         like.append(str(i["likeCount"]))
     return data, name, tag, author, like
 
+class SingleAttr:
+    def __init__(self, value: str | int, percent: bool):
+        self._value = value
+        self._percent = percent
+
+    @property
+    def value(self) -> str:
+        return str(self._value) if not self._percent else str(self._value) + "%"
+
 class JX3AttributeV2_M(JX3AttributeV2):
     @override
     def _panel_type(self, panel_attr_name: str) -> SingleAttr:
         """
         将面板展示的属性转换为实际需要的属性，并传出已有数据的对应属性字典。
         """
-        panel_attr_map = {
-            "面板攻击": "攻击力",
-            "基础攻击": "基础攻击力",
-            "最大气血值": "气血",
-            "面板治疗量": "治疗量",
-            "基础治疗量": "治疗量",
-            "外防": "外功防御",
-            "内防": "内功防御"
+        panel_attr_map: Dict[str, Tuple[str, bool]] = {
+            "面板攻击": ("totalAttack", False),
+            "基础攻击": ("baseAttack", False),
+            "会心": ("atCriticalStrikeLevel", True),
+            "会心效果": ("atCriticalDamagePowerBaseLevel", True),
+            "加速": ("atHasteBaseLevel", False),
+            "加速率": ("atHasteBaseLevel", True),
+            "根骨": ("atSpiritBase", False),
+            "力道": ("atStrengthBase", False),
+            "身法": ("atAgilityBase", False),
+            "元气": ("atSpunkBase", False),
+            "破防": ("atOvercomeBaseLevel", True),
+            "无双": ("atStrainBaseLevel", True),
+            "破招": ("atSurplusValueBase", False),
+            "最大气血值": ("totalLift", False),
+            "御劲": ("atToughnessBaseLevel", True),
+            "化劲": ("atDecriticalDamagePowerBaseLevel", True),
+            "面板治疗量": ("totaltherapyPowerBase", False),
+            "基础治疗量": ("therapyPowerBase", False),
+            "外防": ("atPhysicsShieldBaseLevel", True),
+            "内防": ("atMagicShieldLevel", True),
+            "闪避": ("atDodgeLevel", True),
+            "招架": ("atParryBaseLevel", True),
+            "拆招": ("atParryValue", False),
+            "体质": ("atVitalityBase", False)
         }
         if panel_attr_name in panel_attr_map:
-            panel_attr_name = panel_attr_map[panel_attr_name]
-        speed_percent = False
-        if panel_attr_name == "加速率":
-            speed_percent = True
-        for attr in self.data["data"]["PersonalPanel"]:
-            if attr["name"] == panel_attr_name:
-                return SingleAttr(attr, speed_percent)
-        raise ValueError(f"Unexpected attribute `{panel_attr_name}`!")
-
-def att_mapping(att):
-    if att == "根骨":
-        return "atSpiritBase"
-    elif att == "力道":
-        return "atStrengthBase"
-    elif att == "元气":
-        return "atSpunkBase"
-    elif att == "身法":
-        return "atAgilityBase"
+            panel_attr_name, percent = panel_attr_map[panel_attr_name]
+            return SingleAttr(self.data["data"]["matchDetail"][panel_attr_name], percent)
+        else:
+            raise ValueError(f"Unexpected attribute `{panel_attr_name}`!")
     
-async def get_single_recequips(data: dict, author: str, name: str, tag: str, kungfu: str):
+async def get_single_recommend_equips(data: dict, author: str, name: str, tag: str, kungfu: str):
     score = str(data["matchDetail"]["score"])
     basic = [score, name, author, tag]
     kungfu_obj = Kungfu(kungfu)
-    background = await JX3AttributeV2_M.background(str(kungfu_obj.name))
-    data_obj = JX3AttributeV2_M(data)
+    data_obj = JX3AttributeV2_M({"data": data})
+    background = await data_obj.background(str(data_obj.school))
     max_strength, current_strength = data_obj.strength or ([], [])
     equip_names, equip_icons = data_obj.equips_and_icons or ([], [])
     color_stones = data_obj.color_stone or [("", "")]
@@ -105,7 +116,8 @@ async def get_single_recequips(data: dict, author: str, name: str, tag: str, kun
         c1n,
         data_obj.attr_values,
         c2n,
-        c2i
+        c2i,
+        data_obj.attr_types
     )
     return image
     
@@ -126,22 +138,13 @@ async def get_recommend_equip_image(
     color_stone_name: str, 
     attribute_values: list, 
     color_stone_name_2: str, 
-    color_stone_icon_2: str
+    color_stone_icon_2: str,
+    attr_types: List[str]
 ):
-    attr = kungfu.base
     syst_bold = build_path(ASSETS, ["font", "syst-bold.ttf"])
     syst_mid = build_path(ASSETS, ["font", "syst-mid.ttf"])
     msyh = build_path(ASSETS, ["font", "msyh.ttf"])
     calibri = build_path(ASSETS, ["font", "calibri.ttf"])
-    if attr in ["根骨", "元气", "力道", "身法"]:
-        objects = ["面板攻击", "基础攻击", "会心", "会心效果", "加速", attr, "破防", "无双", "破招", "最大气血值", "御劲", "化劲"]
-    elif attr == "治疗":
-        objects = ["面板治疗量", "基础治疗量", "会心", "会心效果", "加速",
-                   "根骨", "外防", "内防", "破招", "最大气血值", "御劲", "化劲"]
-    elif attr == "防御":
-        objects = ["外防", "内防", "最大气血值", "破招", "御劲", "闪避", "招架", "拆招", "体质", "加速率", "无双", "加速"]
-    else:
-        objects = ["N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A"]
     background = Image.open(school_background)
     draw = ImageDraw.Draw(background)
     flickering = Image.open(build_path(ASSETS, ["image", "jx3", "attributes", "flicker.png"])).resize((38, 38))
@@ -155,7 +158,7 @@ async def get_recommend_equip_image(
     background.alpha_composite(Image.open(str(kungfu.icon)).resize((50, 50)), (61, 62))
 
     # 武器图标
-    if kungfu not in ["问水诀", "山居剑意"]:
+    if kungfu.name not in ["问水诀", "山居剑意"]:
         if equip_icon[11] != "":
             background.alpha_composite(Image.open(await local_save(equip_icon[11])).resize((38, 38)), (708, 587))
             if max_strength[11] in ["3", "4", "8"] or special_weapon(equip_list[11]):
@@ -216,7 +219,7 @@ async def get_recommend_equip_image(
     # 装备精炼
     init = 47
     range_time = 11
-    if kungfu in ["问水诀", "山居剑意"]:
+    if kungfu.name in ["问水诀", "山居剑意"]:
         range_time = range_time + 1
     for i in range(range_time):
         if special_weapon(equip_list[i]):
@@ -263,7 +266,7 @@ async def get_recommend_equip_image(
                  (385, 303), (514, 303), (127, 380), (258, 380), (385, 380), (514, 380)]
     range_time = 12
     for i in range(range_time):
-        draw.text(positions[i], objects[i], fill=(255, 255, 255),
+        draw.text(positions[i], attr_types[i], fill=(255, 255, 255),
                   font=ImageFont.truetype(syst_bold, size=20), anchor="mm")
 
     # 面板数值
@@ -304,7 +307,7 @@ async def get_recommend_equip_image(
     positions = [(940, 65), (960, 65), (940, 114), (960, 114), (940, 163), (960, 163), (940, 212), (960, 212), (940, 261),
                  (960, 261), (940, 310), (960, 310), (940, 359), (940, 408), (940, 555), (940, 604), (960, 604), (980, 604)]
     range_time = 18
-    if kungfu in ["问水诀", "山居剑意"]:
+    if kungfu.name in ["问水诀", "山居剑意"]:
         range_time = range_time + 3
         positions.append((940, 653))
         positions.append((960, 653))

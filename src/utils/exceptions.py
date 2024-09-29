@@ -1,3 +1,5 @@
+from httpx import ConnectTimeout
+
 class RequestDataException(Exception):
     """
     `httpx`异步请求的请求体携带错误类型的数据。

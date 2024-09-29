@@ -6,7 +6,7 @@ from nonebot.adapters.onebot.v11 import GroupMessageEvent
 from src.const.prompts import PROMPT
 from src.const.jx3.server import Server
 
-from .api import *
+from .api import get_server_status
 
 ServerMatcher = on_command("jx3_server", aliases={"开服"}, priority=5, force_whitespace=True)
 
@@ -21,5 +21,5 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     server = Server(args.extract_plain_text(), event.group_id).server
     if server is None:
         await ServerMatcher.finish(PROMPT.ServerNotExist)
-    msg = await server_status(server)
+    msg = await get_server_status(server)
     await ServerMatcher.finish(msg)

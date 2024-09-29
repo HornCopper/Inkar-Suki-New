@@ -5,7 +5,7 @@ from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
 
 from src.utils.network import Request
 
-from .koromo import *
+from .koromo import find_player, get_records, player_pt
 
 search_player = on_command("search_player", aliases={"mssp"}, priority=5, force_whitespace=True)
 

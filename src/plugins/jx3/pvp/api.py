@@ -79,7 +79,7 @@ class Indicator:
         arena_record_data = (await Request("https://m.pvp.xoyo.com/mine/match/person-history", params=params).post(tuilan=True)).json()
         return arena_record_data
 
-async def arena_record(server: str = "", name: str = "") -> Optional[Union[list, str]]:
+async def get_arena_record(server: str = "", name: str = "") -> Optional[Union[list, str]]:
     indicator = Indicator(server, name)
     role_id = await indicator.get_role_id()
     if not role_id or not isinstance(role_id, str):

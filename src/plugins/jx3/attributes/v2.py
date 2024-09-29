@@ -506,7 +506,6 @@ async def get_attributes_image_v2(
     color_stone_icon_2: str,
     attr_types: List[str]
 ):
-    print(locals())
     syst_bold = build_path(ASSETS, ["font", "syst-bold.ttf"])
     syst_mid = build_path(ASSETS, ["font", "syst-mid.ttf"])
     msyh = build_path(ASSETS, ["font", "msyh.ttf"])

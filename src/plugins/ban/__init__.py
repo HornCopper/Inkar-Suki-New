@@ -8,7 +8,7 @@ from src.config import Config
 from src.const.prompts import PROMPT
 from src.utils.analyze import check_number
 from src.utils.permission import checker, error
-from src.utils.message import preprocess
+from src.utils.message import message_universal
 
 from .process import Ban
 
@@ -46,7 +46,7 @@ async def _(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
     await UnbanMatcher.finish(f"好的，已经全域解封({user_id})。")
 
 
-@preprocess.handle()
+@message_universal.handle()
 async def _(matcher: Matcher, event: MessageEvent):
     if Ban(event.user_id).status:
         matcher.stop_propagation()

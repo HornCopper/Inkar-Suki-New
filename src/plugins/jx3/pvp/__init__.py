@@ -7,7 +7,7 @@ from src.const.prompts import PROMPT
 from src.const.jx3.server import Server
 from src.utils.network import Request
 
-from .api import *
+from .api import get_arena_record
 
 ArenaRecordMatcher = on_command("jx3_arena_record", aliases={"战绩"}, force_whitespace=True, priority=5)
 
@@ -27,7 +27,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     server = Server(server, event.group_id).server
     if server is None:
         await ArenaRecordMatcher.finish(PROMPT.ServerNotExist)
-    data = await arena_record(server, name)
+    data = await get_arena_record(server, name)
     if isinstance(data, list):
         await ArenaRecordMatcher.finish(data[0])
     elif isinstance(data, str):

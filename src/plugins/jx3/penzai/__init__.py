@@ -8,8 +8,8 @@ from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
 from src.utils.analyze import check_number
 from src.const.prompts import PROMPT
 
-from .dh import *
-from .wg import *
+from .dh import get_dh
+from .wg import get_wg
 
 DHMatcher = on_command("jx3_dh", aliases={"蹲号"}, force_whitespace=True, priority=5)
 

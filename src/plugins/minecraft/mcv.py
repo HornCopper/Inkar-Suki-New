@@ -2,7 +2,7 @@ from src.utils.network import Request
 
 import re
 
-async def mcbedrockv():  # Minecraft 基岩版 最新版本获取，数据来源@Mojira
+async def get_be_version():  # Minecraft 基岩版 最新版本获取，数据来源@Mojira
     data = (await Request("https://bugs.mojang.com/rest/api/2/project/10200/versions").get()).json()
     beta = []
     preview = []
@@ -21,7 +21,7 @@ async def mcbedrockv():  # Minecraft 基岩版 最新版本获取，数据来源
     return f"目前最新版本为：{msg}（数据来自Mojira，商店尚未更新属正常情况）"
 
 
-async def mcjavav():  # Minecraft Java版最新版本获取
+async def get_je_version():  # Minecraft Java版最新版本获取
     data = (await Request("https://piston-meta.mojang.com/mc/game/version_manifest.json").get()).json()
     release = data["latest"]["release"]
     snapshot = data["latest"]["snapshot"]

@@ -1,5 +1,7 @@
 from pathlib import Path
-from typing import Literal, overload
+from typing import Literal
+
+from src.utils.typing import overload
 
 def read(path: str) -> str:
     """

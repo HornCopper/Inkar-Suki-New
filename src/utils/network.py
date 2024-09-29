@@ -1,4 +1,3 @@
-from typing import overload
 from urllib.request import urlopen
 
 from src.utils.exceptions import RequestDataException
@@ -27,6 +26,10 @@ class Request:
 
         Args:
             expire_at (int): 过期时间戳，在过期时间戳到达之前请求请求同一个地址均会使用第一次返回。
+            timeout (int): 超时时间，单位`seconds`，默认为`20`。
+
+        Returns:
+            response (httpx.Response): `httpx`响应类。
         """
         if isinstance(self.params, str):
             raise RequestDataException("Method `GET` not accept argument `params` with type `str`!")
@@ -80,6 +83,9 @@ class Request:
         Args:
             params (dict): 请求体，可不携带`ts`字段。
             ticket (str): 推栏`Token`，需要通过一些方法获得，由装饰器进行填入，**调用时不要传入`ticket`**。
+
+        Returns:
+            arguments (dict): 关键字参数字典。
         """
         if params is {}:
             params = {"ts": gen_ts()}

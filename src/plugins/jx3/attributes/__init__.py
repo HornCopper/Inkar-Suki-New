@@ -3,10 +3,12 @@ from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
 from nonebot.params import CommandArg
 
+from src.const.jx3.server import Server
+from src.const.prompts import PROMPT
 from src.utils.network import Request
 
-from .v2 import *
-from .v4 import *
+from .v2 import get_attr_v2
+from .v4 import get_attrs_v4
 
 AttributeV2Matcher = on_command("jx3_addritube_v2", aliases={"属性", "查装", "属性v2", "查装v2"}, force_whitespace=True, priority=5)
 

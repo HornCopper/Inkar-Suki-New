@@ -4,9 +4,10 @@ from nonebot.params import CommandArg
 from nonebot.adapters.onebot.v11 import GroupMessageEvent, Bot, MessageSegment as ms
 
 from src.const.path import ASSETS, build_path
+from src.utils.file import read
 from src.utils.database.operation import set_group_settings, get_group_settings
 
-from .about import *
+from .about import generate_group_info
 
 import json
 

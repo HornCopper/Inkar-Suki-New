@@ -14,7 +14,7 @@ from ._template import table_zhue_head, template_zhue
 import json
 import time
 
-async def getZhueRecord(server: str):
+async def get_zhue_image(server: str):
     headers = {
         "Accept": "application/json, text/javascript, */*; q=0.01",
         "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",

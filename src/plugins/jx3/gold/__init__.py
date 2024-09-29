@@ -7,7 +7,7 @@ from src.utils.network import Request
 from src.const.jx3.server import Server
 from src.const.prompts import PROMPT
 
-from .api import *
+from .api import get_coin_price_image
 
 CoinPriceMatcher = on_command("jx3_demon", aliases={"金价"}, force_whitespace=True, priority=5)
 

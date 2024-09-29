@@ -7,12 +7,11 @@ from src.utils.analyze import check_number
 from src.utils.network import Request
 from src.utils.database.operation import get_group_settings
 
-from .app import *
+from .app import Assistance
 
 AssistanceInstance = Assistance()
 
 CreateTeamMatcher = on_command("创建团队", force_whitespace=True, priority=5)
-
 
 @CreateTeamMatcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -24,7 +23,6 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     await CreateTeamMatcher.finish(resp)
 
 BookTeamMatcher = on_command("预定", aliases={"预订", "报名"}, force_whitespace=True, priority=5)
-
 
 @BookTeamMatcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -42,7 +40,6 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
 
 CancelTeamMatcher = on_command("取消预定", aliases={"取消预订", "取消报名"}, force_whitespace=True, priority=5)
 
-
 @CancelTeamMatcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
@@ -58,7 +55,6 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
 
 DissolveTeamMatcher = on_command("解散团队", aliases={"取消开团"}, force_whitespace=True, priority=5)
 
-
 @DissolveTeamMatcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
@@ -70,7 +66,6 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     await DissolveTeamMatcher.finish(resp)
 
 LookupTeamMatcher = on_command("查看团队", priority=5, force_whitespace=True)
-
 
 @LookupTeamMatcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -84,7 +79,6 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         return
     img = Request(img_path).local_content
     await LookupTeamMatcher.finish(ms.image(img))
-
 
 TeamListMatcher = on_command("团队列表", priority=5, force_whitespace=True)
 

@@ -6,7 +6,7 @@ from nonebot.typing import T_State
 
 from src.accounts.manage import AccountManage
 
-from .api import *
+from .api import get_poem
 
 import random
 

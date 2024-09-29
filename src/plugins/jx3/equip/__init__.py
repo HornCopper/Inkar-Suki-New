@@ -13,10 +13,11 @@ from src.const.path import TEMPLATES, build_path
 from src.templates import HTMLSourceCode
 from src.utils.generate import generate
 from src.utils.analyze import check_number
+from src.utils.network import Request
 
 from ._template import template_recommend_equip, table_recommend_head
 
-from .api import *
+from .api import get_recommended_equips_list, get_single_recommend_equips
 
 RecommendEquipMatcher = on_command("jx3_equip_recommend", aliases={"配装"}, force_whitespace=True, priority=5)
 
@@ -76,7 +77,7 @@ async def _(event: GroupMessageEvent, state: T_State, full_argument: Message = C
     await RecommendEquipMatcher.send(ms.image(Request(img).local_content))
 
 @RecommendEquipMatcher.got("num", prompt="请选择配装查看哦，回复我只需要数字就行啦！")
-async def jx3_equip_recommend_detail(state: T_State, num: Message = Arg()):
+async def _(state: T_State, num: Message = Arg()):
     index = num.extract_plain_text()
     if not check_number(index):
         await RecommendEquipMatcher.finish(PROMPT.NumberInvalid)
@@ -85,8 +86,8 @@ async def jx3_equip_recommend_detail(state: T_State, num: Message = Arg()):
     tag = state["tag"][int(index)]
     name = state["name"][int(index)]
     kungfu = state["kungfu"]
-    data = await get_single_recequips(data, author, name, tag, kungfu)
+    data = await get_single_recommend_equips(data, author, name, tag, kungfu)
     if isinstance(data, list):
         await RecommendEquipMatcher.finish(data[0])
     elif isinstance(data, str):
-        await RecommendEquipMatcher.finish(ms.image(Request(Path(data).as_uri()).local_content))
+        await RecommendEquipMatcher.finish(ms.image(Request(data).local_content))

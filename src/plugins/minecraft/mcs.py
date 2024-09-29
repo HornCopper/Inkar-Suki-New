@@ -6,7 +6,7 @@ def clean(string: str) -> str:
     return re.sub(r"§.", "", string)
 
 
-async def jes(raw_ip: str) -> str:
+async def get_java_server(raw_ip: str) -> str:
     ip = raw_ip.split(":") 
     if len(ip) > 2:
         return "唔……暂时无法识别IPv6地址，或者是您的地址输入有误哦~"
@@ -36,7 +36,7 @@ async def jes(raw_ip: str) -> str:
         return f"已经查到Java版服务器啦：\n地址：{ip}:{port}\n在线人数：{onlp}/{maxp}\n介绍：{desc}"
 
 
-async def bes(raw_ip: str) -> str:
+async def get_bedrock_server(raw_ip: str) -> str:
     ip = raw_ip.split(":")
     if len(ip) > 2:
         return "唔……暂时无法识别IPv6地址，或者是您的地址输入有误哦~"

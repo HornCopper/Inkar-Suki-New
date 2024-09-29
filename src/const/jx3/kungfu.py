@@ -107,6 +107,6 @@ class Kungfu:
         """
         if self.name is None:
             return None
-        for kungfu, internel_id in self.kungfu_internel_id:
+        for kungfu in self.kungfu_internel_id:
             if kungfu == self.name:
-                return int(internel_id)
+                return int(self.kungfu_internel_id[kungfu])
