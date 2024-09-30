@@ -8,7 +8,7 @@ def get_ptk(p_skey: str) -> int:
         return value & 2147483647
     return 0
 
-async def get_daren_count(self_id: int, user_id: int, pskey: str) -> dict:
+async def get_daren_count(self_id: int, user_id: int, pskey: str) -> int:
     headers = {
         "Referer": "https://cgi.vip.qq.com/",
         "Cookie": f"p_uin=o{self_id}; p_skey={pskey}"
