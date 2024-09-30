@@ -165,7 +165,6 @@ async def generate(
     
     # 确定 source 类型
     web = source.startswith("http")  # 如果是 URL
-    file_path = Path(source).exists()  # 如果是本地文件
     is_html = "<html" in source.lower()  # 如果是 HTML 源代码
 
     if is_html:
@@ -179,10 +178,8 @@ async def generate(
         page_source = Path(html_file_path).as_uri()
     elif web:
         page_source = source  # 作为 URL 加载
-    elif file_path:
-        page_source = Path(source).as_uri()  # 作为本地文件加载
     else:
-        raise ValueError("Invalid source: must be HTML, file path, or web URL.")
+        raise ValueError("Invalid source: must be HTML, or web URL.")
 
     config = ScreenshotConfig(
         web=web,
