@@ -68,7 +68,8 @@ async def generate_group_info(bot: Bot, group_id: str):
             subscribe_contents = final_subscribe_contents,
             additions_contents = final_additions_contents,
             group_id = group_id,
-            group_name = group_name
+            group_name = group_name,
+            grass_image = Path(build_path(ASSETS, ["image", "minecraft", "grass.png"])).as_uri()
         )
     )
     final_path = await generate(html, ".total", False)
