@@ -88,7 +88,7 @@ async def get_arena_record(server: str = "", name: str = "") -> Optional[Union[l
     msgbox = []
     for mode in ["22", "33", "55"]:
         data = await indicator.get_arena_info(mode) # type: ignore
-        if data == None:
+        if data is None:
             continue
         input_params = {
             "rank": f"{mode[0]}v{mode[-1]} · " + str(data["grade"]) + "段", # type: ignore
@@ -108,7 +108,7 @@ async def get_arena_record(server: str = "", name: str = "") -> Optional[Union[l
             "rank": str(i["avg_grade"]),
             "mode": str(i["pvp_type"]) + "v" + str(i["pvp_type"]),
             "time": Time(i["start_time"]).format("%m月%d日 %H:%M:%S"),
-            "relate": Time().format(i["end_time"]),
+            "relate": Time().relate(i["end_time"]),
             "length": "共" + str(i["end_time"] - i["start_time"]) + "秒",
             "score": str(i["total_mmr"]),
             "delta": str(i["mmr"]),

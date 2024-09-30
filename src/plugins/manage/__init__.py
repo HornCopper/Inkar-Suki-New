@@ -12,7 +12,7 @@ from src.const.path import (
 )
 from src.utils.network import Request
 from src.utils.time import Time
-from src.utils.permission import checker, error
+from src.utils.permission import check_permission, denied
 from src.utils.database import db
 from src.utils.database.classes import GroupSettings, Account
 from src.utils.database.operation import get_groups
@@ -38,7 +38,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         return
     personal_data = await bot.call_api("get_group_member_info", group_id=event.group_id, user_id=event.user_id, no_cache=True)
     user_permission = personal_data["role"] in ["owner", "admin"]
-    if not (checker(str(event.user_id), 10) or user_permission):
+    if not (check_permission(str(event.user_id), 10) or user_permission):
         await DismissMatcher.finish(f"唔……只有群主或管理员才能移除{Config.bot_basic.bot_name}哦~")
     else:
         await DismissMatcher.send(f"确定要让{Config.bot_basic.bot_name}离开吗？如果是，请再发送一次“移除音卡”。")
@@ -61,7 +61,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         return
     personal_data = await bot.call_api("get_group_member_info", group_id=event.group_id, user_id=event.user_id, no_cache=True)
     user_permission = personal_data["role"] in ["owner", "admin"]
-    if not (checker(str(event.user_id), 10) or user_permission):
+    if not (check_permission(str(event.user_id), 10) or user_permission):
         await ResetMatcher.finish(f"唔……只有群主或管理员才能重置{Config.bot_basic.bot_name}哦~")
     else:
         await ResetMatcher.send(f"确定要重置{Config.bot_basic.bot_name}数据吗？如果是，请再发送一次“重置音卡”。\n注意：所有本群数据将会清空，包括绑定和订阅，该操作不可逆！")
@@ -113,8 +113,8 @@ EchoMatcher = on_command("echo", force_whitespace=True, priority=5)  # 复读只
 async def _(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
-    if not checker(str(event.user_id), 10):
-        await EchoMatcher.finish(error(10))
+    if not check_permission(str(event.user_id), 10):
+        await EchoMatcher.finish(denied(10))
     await EchoMatcher.finish(args)
 
 PingMatcher = on_command("ping", force_whitespace=True, priority=5)  # 测试机器人是否在线
@@ -123,7 +123,7 @@ PingMatcher = on_command("ping", force_whitespace=True, priority=5)  # 测试机
 async def _(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() != "":
         return
-    permission = checker(str(event.user_id), 1)
+    permission = check_permission(str(event.user_id), 1)
     if not permission:
         await PingMatcher.finish(f"咕咕咕，音卡来啦！\n当前时间为：{Time().format()}\n欢迎使用Inkar-Suki！")
     else:
@@ -144,8 +144,8 @@ PurgeMatcher = on_command("purge", force_whitespace=True, priority=5)
 async def _(event: MessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() != "":
         return
-    if not checker(str(event.user_id), 10):
-        await PurgeMatcher.finish(error(10))
+    if not check_permission(str(event.user_id), 10):
+        await PurgeMatcher.finish(denied(10))
     try:
         for i in os.listdir(CACHE):
             os.remove(build_path(CACHE, [i]))
@@ -160,8 +160,8 @@ AdminMatcher = on_command("setop", aliases={"admin", "setadmin"}, force_whitespa
 async def _(bot: Bot, event: MessageEvent, full_argument: Message = CommandArg()):
     if full_argument.extract_plain_text() == "":
         return
-    if not checker(str(event.user_id), 10) and str(event.user_id) not in Config.bot_basic.bot_owner:
-        await AdminMatcher.finish(error(10))
+    if not check_permission(str(event.user_id), 10) and str(event.user_id) not in Config.bot_basic.bot_owner:
+        await AdminMatcher.finish(denied(10))
     args = full_argument.extract_plain_text().split(" ")
     user_id = args[0]
     if user_id in Config.bot_basic.bot_owner and str(event.user_id) not in Config.bot_basic.bot_owner:
@@ -175,7 +175,7 @@ async def _(bot: Bot, event: MessageEvent, full_argument: Message = CommandArg()
 
 @post_process
 async def _(bot: Bot, event: MessageEvent, exception: None | Exception, cmd = RawCommand()):
-    if cmd == None:
+    if cmd is None:
         return
     if exception:
         if isinstance(exception, ConnectTimeout):

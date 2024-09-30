@@ -25,34 +25,41 @@ class ApplicationsList(LiteModel):
     TABLE_NAME: str = "applications"
     applications_list: list = []
 
-# class BannedWordList(LiteModel):
-#     TABLE_NAME: str = "banword"
-#     banned_word_list: List[str] = []
-
 class BannedUser(LiteModel):
     TABLE_NAME: str = "ban"
     user_id: int = 0
     reason: str = ""    
-
-# class BannedList(LiteModel):
-#     TABLE_NAME: str = "ban"
-#     banned_list: list = []
 
 class GroupSettings(LiteModel):
     TABLE_NAME: str = "settings"
     server: str = ""
     group_id: str = ""
     subscribe: List[str] = []
-    addtions: List[str] = []
+    additions: List[str] = []
     welcome: str = "欢迎入群！"
     blacklist: List[Dict[str, str]] = [] 
     wiki: dict = {"startwiki": "", "interwiki": []}
     webhook: List[str] = []
     opening: list = []
 
+class JX3APIWSData(LiteModel):
+    TABLE_NAME: str = "jx3api_wsdata"
+    action: int = 0
+    event: str = ""
+    data: dict = {}
+    timestamp: int = 0
+
 class Population(LiteModel):
     TABLE_NAME: str = "population"
     populations: dict = {}
+
+class RequestData(LiteModel):
+    TABLE_NAME: str = "request_data"
+    url: str = ""
+    headers: dict = {}
+    params: dict = {}
+    response_data: str = ""
+    timestamp: int = 0
 
 class RoleData(LiteModel):
     TABLE_NAME: str = "role_data"

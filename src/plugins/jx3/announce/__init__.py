@@ -25,8 +25,8 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     """
     if args.extract_plain_text() != "":
         return
-    if os.path.exists(build_path(ASSETS, ["jx3", "update.png"])):
-        img = Request(Path(build_path(ASSETS, ["jx3", "update.png"])).as_uri()).local_content
+    if os.path.exists(build_path(ASSETS, ["image", "jx3", "update.png"])):
+        img = Request(Path(build_path(ASSETS, ["image", "jx3", "update.png"])).as_uri()).local_content
         await AnnounceMatcher.finish(ms.image(img))
     else:
         data = (await Request(f"{Config.jx3.api.url}/data/news/allnews").get()).json()
@@ -40,7 +40,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
                     viewport={"height": 3840, "width": 2000}, 
                     hide_classes=["detail_bot", "bdshare-slide-button"], 
                     device_scale_factor=2.0,
-                    output_path=build_path(ASSETS, ["jx3", "update.png"])
+                    output_path=build_path(ASSETS, ["image", "jx3", "update.png"])
                 )
                 if not isinstance(store_path, str):
                     return

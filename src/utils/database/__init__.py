@@ -5,7 +5,9 @@ from src.utils.database.classes import (
     BannedUser,
     GroupSettings,
     Population,
-    RoleData
+    RoleData,
+    JX3APIWSData,
+    RequestData
 )
 
 from src.const.path import DATA, build_path
@@ -19,4 +21,11 @@ db.auto_migrate(
     GroupSettings(),
     Population(),
     RoleData()
+)
+
+cache_db = Database(build_path(DATA, ["cache.db"]))
+
+cache_db.auto_migrate(
+    JX3APIWSData(),
+    RequestData()
 )

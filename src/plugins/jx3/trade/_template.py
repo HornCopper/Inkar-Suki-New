@@ -17,7 +17,7 @@ template_msgbox = """
 template_table = """
 <tr>
     <td class="short-column"><img src="{{ icon }}"></td>
-    <td class="short-column"><span style="color:rgb$color">{{ name }}</span></td>
+    <td class="short-column"><span style="color:rgb{{ color }}">{{ name }}</span></td>
     <td class="short-column">{{ time }}</td>
     <td class="short-column">{{ limit }}</td>
     <td class="short-column">{{ price }}</td>

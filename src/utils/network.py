@@ -1,13 +1,18 @@
+from typing import Any
 from urllib.request import urlopen
 
+from src.utils.database import cache_db
+from src.utils.database.classes import RequestData
 from src.utils.exceptions import RequestDataException
 from src.utils.decorators import ticket_required
 from src.utils.tuilan import gen_xsk, gen_ts, format_body
+from src.utils.time import Time
 
 import httpx
+import json
 
 class Request:
-    def __init__(self, url: str, headers: dict = {}, params: str | dict = {}):
+    def __init__(self, url: str, *, headers: dict = {}, params: str | dict = {}):
         """
         构造网络请求，亦可以请求本地内容。
 
@@ -33,17 +38,36 @@ class Request:
         """
         if isinstance(self.params, str):
             raise RequestDataException("Method `GET` not accept argument `params` with type `str`!")
+        
+        if expire_at != 0:
+            cached: RequestData | Any = cache_db.where_one(RequestData(), "timestamp >= ? AND url = ?", Time().raw_time, self.url, default=None)
+            if cached is not None:
+                return httpx.Response(status_code=200, content=cached.response_data.encode("utf-8"))
+
         async with httpx.AsyncClient(follow_redirects=True, verify=False) as client:
             response = await client.get(self.url, params=self.params, headers=self.headers, timeout=timeout, **kwargs)
-            return response
     
-    async def post(self, tuilan: bool = False, timeout: int = 600) -> httpx.Response:
+        if expire_at != 0:
+            cache_db.delete(RequestData(), "url = ? AND timestamp < ?", self.url, Time().raw_time)
+            cache_db.save(
+                RequestData(
+                    url=self.url,
+                    headers=self.headers,
+                    params=self.params,
+                    response_data=response.text,
+                    timestamp=expire_at,
+                )
+            )
+
+        return response
+    
+    async def post(self, tuilan: bool = False, timeout: int = 20) -> httpx.Response:
         """
         发送`POST`请求。
 
         Args:
             tuilan (bool): 是否为推栏请求，如果是则构造推栏请求。
-            timeout (int): 超时时间，单位毫秒（ms）。
+            timeout (int): 超时时间，单位秒（s）。
         """
         async with httpx.AsyncClient(follow_redirects=True, verify=False) as client:
             if isinstance(self.params, str):

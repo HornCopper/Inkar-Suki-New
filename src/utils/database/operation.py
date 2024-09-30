@@ -12,7 +12,7 @@ def get_group_settings(group_id: int | str, key: str = "") -> Any:
         db.save(GroupSettings(group_id=str(group_id)))
         return getattr(GroupSettings(), key)
 
-def set_group_settings(group_id: int | str, key: str, content: Any) -> bool | None:
+def set_group_settings(group_id: int | str, key: str, content: Any) -> None:
     group_data: GroupSettings | Any = db.where_one(GroupSettings(), "group_id = ?", str(group_id), default=None)
     if group_data is None:
         group_data = GroupSettings(group_id=str(group_id))

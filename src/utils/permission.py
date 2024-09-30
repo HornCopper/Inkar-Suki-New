@@ -3,7 +3,7 @@ from typing import Dict, Any
 from src.utils.database.classes import Account
 from src.utils.database import db
 
-def checker(user_id: str | int, level: str | int) -> bool:
+def check_permission(user_id: str | int, level: str | int) -> bool:
     """
     检查用户是否满足某个权限等级。
 
@@ -14,7 +14,7 @@ def checker(user_id: str | int, level: str | int) -> bool:
     data: Account | Any = db.where_one(Account(), "user_id = ?", int(user_id), default=Account())
     return data.permission >= int(level)
 
-def error(level: int | str) -> str:
+def denied(level: int | str) -> str:
     """
     构造权限不足提示。
 

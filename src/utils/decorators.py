@@ -8,6 +8,7 @@ from src.const.prompts import PROMPT
 from src.utils.exceptions import ConfigurationException
 
 import time
+import asyncio
 
 # def require_argument(require_non_empty: bool = True):
 #     """
@@ -69,12 +70,25 @@ def token_required(func) -> Callable:
 
 def time_record(func):
     """
-    对函数执行时间进行计时的装饰器。
+    对同步和异步函数执行时间进行计时的装饰器。
     """
-    def wrapper(*args, **kwargs):
+    @wraps(func)
+    async def async_wrapper(*args, **kwargs):
+        time_start = time.time()
+        result = await func(*args, **kwargs)
+        time_end = time.time()
+        logger.info(f"{func.__name__} 执行时间: {time_end - time_start:.6f} 秒")
+        return result
+
+    @wraps(func)
+    def sync_wrapper(*args, **kwargs):
         time_start = time.time()
         result = func(*args, **kwargs)
         time_end = time.time()
         logger.info(f"{func.__name__} 执行时间: {time_end - time_start:.6f} 秒")
         return result
-    return wrapper
+
+    if asyncio.iscoroutinefunction(func):
+        return async_wrapper
+    else:
+        return sync_wrapper

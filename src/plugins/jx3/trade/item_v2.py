@@ -67,7 +67,7 @@ async def get_item_history(standard_name: str) -> Tuple[List[int], List[str]]:
 async def get_item_detail(item_name: str) -> list | Literal[False]:
     item_data = await query_aijx3_data("https://www.aijx3.cn/api/wj/goods/getGoodsDetail", params={"goodsName": item_name})
     item_data = item_data["data"]
-    if item_data == None:
+    if item_data is None:
         return False
     item_name = item_data["goodsName"]
     item_alias = item_data["goodsAlias"]

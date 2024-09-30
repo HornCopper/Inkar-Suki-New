@@ -8,6 +8,9 @@ from src.utils.generate import (
     ScreenshotGenerator,
     generate
 )
+from src.utils.time import Time
+from src.utils.database import cache_db
+from src.utils.database.classes import JX3APIWSData
 from src.utils.database.operation import send_subscribe
 
 from .parse import (
@@ -24,6 +27,7 @@ import shutil
 import asyncio
 import websockets
 import json
+import os
 
 driver = get_driver()
 
@@ -33,23 +37,29 @@ async def websocket_client(ws_url: str, headers: dict):
             async with websockets.connect(ws_url, extra_headers=headers) as websocket:
                 logger.info("WebSocket connection established")
                 while True:
-                    response = await websocket.recv()
-                    raw_response = response
-                    response = json.loads(response)
+                    response_text = await websocket.recv()
+                    raw_response = response_text
+                    response: dict = json.loads(response_text)
                     if response["action"] not in get_registered_actions():
                         logger.warning("未知JX3API 消息: " + str(raw_response))
                         continue
                     logger.info("JX3API 解析成功: " + str(raw_response))
                     parsed = parse_data(response)
                     msg: JX3APIOutputMsg = parsed.msg()
+                    cache_db.save(
+                        JX3APIWSData(
+                            action = response["action"],
+                            event = msg.name,
+                            data = response["data"],
+                            timestamp = Time().raw_time
+                        )
+                    )
                     name = msg.name
                     if name == "公告":
                         url, title = parsed.provide_data()
-                        if re.match(r'(\d+)月(\d+)日(.*?)版本更新公告', title):
-                            try:    
-                                shutil.rmtree(build_path(ASSETS, ["jx3", "update.png"]))
-                            except FileNotFoundError:
-                                pass
+                        if re.match(r"(\d+)月(\d+)日(.*?)版本更新公告", title):
+                            if os.path.exists(build_path(ASSETS, ["image", "jx3", "update.png"])):
+                                os.remove(build_path(ASSETS, ["image", "jx3", "update.png"]))
                             await generate(
                                 url, 
                                 ".allnews_list_container", 
@@ -57,7 +67,7 @@ async def websocket_client(ws_url: str, headers: dict):
                                 viewport={"height": 3840, "width": 2000}, 
                                 hide_classes=["detail_bot", "bdshare-slide-button"], 
                                 device_scale_factor=2.0,
-                                output_path=build_path(ASSETS, ["jx3", "update.png"])
+                                output_path=build_path(ASSETS, ["image", "jx3", "update.png"])
                             )
                     await send_subscribe(name, msg.msg, msg.server)
                     logger.info(msg.msg)

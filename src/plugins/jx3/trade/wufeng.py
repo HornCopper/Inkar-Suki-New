@@ -30,12 +30,12 @@ def get_exist_attrs(data: List[dict]) -> List[str]:
 
 async def get_equips_data(name: str, quality: int):
     url = f"https://node.jx3box.com/api/node/item/search?ids=&keyword={name}&client=std&MinLevel={quality}&MaxLevel={quality}&BindType=2"
-    data = []
+    satisfied = []
     data = (await Request(url).get()).json()
     for x in data["data"]["data"]:
         if str(x["Level"]) == str(quality):
-            data.append(x)
-    return data
+            satisfied.append(x)
+    return satisfied
 
 async def get_equip_data(raw: str):
     attrsInstance = AttrsConverter(raw)
@@ -85,7 +85,7 @@ async def get_wufeng_image(raw: str, server: str):
         msgbox = ""
     color = ["(167, 167, 167)", "(255, 255, 255)", "(0, 210, 75)", "(0, 126, 255)", "(254, 45, 254)", "(255, 165, 0)"][data["Quality"]]
     detailData = (await Request(f"https://next2.jx3box.com/api/item-price/{itemId}/detail?server={server}&limit=20").get()).json()
-    if (not currentStatus or yesterdayFlag) and detailData["data"]["prices"] == None:
+    if (not currentStatus or yesterdayFlag) and detailData["data"]["prices"] is None:
         if not yesterdayFlag:
             return ["唔……该物品目前交易行没有数据。"]
         else:

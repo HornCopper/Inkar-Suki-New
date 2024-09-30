@@ -6,7 +6,7 @@ from nonebot.adapters.onebot.v11 import MessageEvent, MessageSegment as ms
 from nonebot.params import CommandArg, ArgPlainText
 
 from src.accounts.manage import AccountManage, CheckinRewards
-from src.utils.permission import checker, error
+from src.utils.permission import check_permission, denied
 from src.utils.analyze import check_number
 
 from ._message import message_sign
@@ -57,7 +57,7 @@ async def _(event: MessageEvent, args: Message = CommandArg()):
     status: CheckinRewards | Literal[False] = AccountManage(event.user_id).checkin()
     if not status:
         await CheckinMatcher.finish("您已经签到过了哦，请等待次日7点后重试！")
-    msg = ms.at(event.user_id) + f" 签到成功！\n本日幸运值：{status.lucky_value}\n金币：+{status.coin}\n累计签到：{status.checkin_total_days}天"
+    msg = ms.at(event.user_id) + f" 签到成功！\n本日幸运值：{status.lucky_value}\n金币：+{status.coin}\n累计签到：{status.total_days}天"
     if status.is_lucky:
         msg += "\n触发额外奖励！获得 10000 金币！"
     await CheckinMatcher.finish(msg)
@@ -79,8 +79,8 @@ AddCoinMatcher = on_command("增加金币", force_whitespace=True, priority=5)
 async def _(event: MessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
-    if not checker(str(event.user_id), 10):
-        await AddCoinMatcher.finish(error(10))
+    if not check_permission(str(event.user_id), 10):
+        await AddCoinMatcher.finish(denied(10))
     arg = args.extract_plain_text().split(" ")
     if len(arg) != 2:
         await AddCoinMatcher.finish("唔……参数数量不正确哦~")
@@ -95,8 +95,8 @@ ReduceCoinMatcher = on_command("减少金币", force_whitespace=True, priority=5
 async def _(event: MessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
-    if not checker(str(event.user_id), 10):
-        await ReduceCoinMatcher.finish(error(10))
+    if not check_permission(str(event.user_id), 10):
+        await ReduceCoinMatcher.finish(denied(10))
     arg = args.extract_plain_text().split(" ")
     if len(arg) != 2:
         await ReduceCoinMatcher.finish("唔……参数数量不正确哦~")

@@ -25,7 +25,7 @@ class S(Server):
             final_server = get_group_settings(self.group_id)
         elif self._server is not None:
             final_server = self.server_raw
-            if final_server == None and self.group_id:
+            if final_server is None and self.group_id:
                 final_server = get_group_settings(self.group_id)
         else:
             final_server = None

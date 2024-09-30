@@ -62,7 +62,7 @@ class Kungfu:
         return self.kungfu_colors_data.get(self.name, "#FFFFFF")
     
     @property
-    def icon(self) -> str | None:
+    def icon(self) -> str:
         """
         心法图标。
         """

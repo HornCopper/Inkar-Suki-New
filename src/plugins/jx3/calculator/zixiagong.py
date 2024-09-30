@@ -75,7 +75,7 @@ class ZiXiaGongAttributes:
         for equip in self.data["Equips"]:
             if equip["Icon"]["SubKind"] == "护臂":
                 if "WPermanentEnchant" in equip:
-                    enchant_name = Enchant(equip["Quality"])
+                    enchant_name = Enchant(equip["Quality"]).name
                     if not isinstance(enchant_name, str):
                         raise ValueError("Unknown enchant of \"" + equip["Name"] + "(" + equip["Quality"] + ")`.")
                     return self.enchant_map[enchant_name] + "护腕大附魔"
@@ -199,7 +199,6 @@ async def get_calculated_img_zixiagong(server: str, name: str):
         "mode": mode
     }
     calculated_data = (await Request("http://206.237.21.122:25765/calculator_zxg", params=params, headers={"token": inkarsuki_offical_token}).post(timeout=10000)).json()
-    calculated_data = json.loads(calculated_data)
     dps = calculated_data["data"]["result"]
     bad_dps = calculated_data["data"]["bad_result"]
     final_data = process_skill_data(

@@ -16,10 +16,10 @@ RecruitMatcher = on_command("jx3_recruit", aliases={"招募"}, force_whitespace=
 @RecruitMatcher.handle()
 async def _(event: GroupMessageEvent, full_argument: Message = CommandArg()):
     filter = False
-    addtions = get_group_settings(str(event.group_id), "addtions")
-    if not isinstance(addtions, list):
+    additions = get_group_settings(str(event.group_id), "additions")
+    if not isinstance(additions, list):
         return
-    if "招募过滤" in addtions:
+    if "招募过滤" in additions:
         filter = True
     args = full_argument.extract_plain_text().split(" ")
     if len(args) == 0:

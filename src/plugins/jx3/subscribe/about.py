@@ -14,9 +14,9 @@ import json
 
 async def generate_group_info(bot: Bot, group_id: str):
     subscribe_options = json.loads(read(build_path(ASSETS, ["source", "subscribe"], end_with_slash=True) + "options.json"))
-    addtions_options = json.loads(read(build_path(ASSETS, ["source", "subscribe"], end_with_slash=True) + "additions.json"))
+    additions_options = json.loads(read(build_path(ASSETS, ["source", "subscribe"], end_with_slash=True) + "additions.json"))
     current_subscribe = get_group_settings(group_id, "subscribe")
-    current_addtions = get_group_settings(group_id, "additions")
+    current_additions = get_group_settings(group_id, "additions")
     subscribe_contents = []
     additions_contents = []
     for i in list(subscribe_options):
@@ -37,10 +37,10 @@ async def generate_group_info(bot: Bot, group_id: str):
                 flag = flag
             )
         )
-    for i in list(addtions_options):
-        desc = addtions_options[i][0]
-        icon = addtions_options[i][1]
-        if i in current_addtions:
+    for i in list(additions_options):
+        desc = additions_options[i][0]
+        icon = additions_options[i][1]
+        if i in current_additions:
             status = "enabled"
             flag = "✔"
         else:

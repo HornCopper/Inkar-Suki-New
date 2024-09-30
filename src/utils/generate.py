@@ -8,6 +8,7 @@ from nonebot.log import logger
 from typing import Any
 
 from src.const.path import CACHE, build_path
+from src.utils.file import write
 from src.utils.exceptions import BrowserNotInitializedException
 from src.utils.decorators import time_record
 
@@ -172,8 +173,7 @@ async def generate(
         html_file_path = build_path(CACHE, [get_uuid() + ".html"])
         
         # 将 HTML 源代码写入缓存文件
-        with open(html_file_path, "w", encoding="utf-8") as f:
-            f.write(source)
+        write(html_file_path, source)
         
         # 将文件路径作为 page_source 传递
         page_source = Path(html_file_path).as_uri()

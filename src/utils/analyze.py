@@ -60,7 +60,7 @@ def check_number(value: str | int) -> bool:
         return True
     return value.isdecimal()
 
-def extract_numbers(string: str):
+def extract_numbers(string: str) -> List[int]:
     """
     从字符串中提取数字。
 

@@ -59,7 +59,7 @@ class JX3Serendipity:
         data = (await Request(final_url).get()).json()
         serendipities = []
         data = data["data"]["data"]
-        if data == None:
+        if data is None:
             self.my = serendipities
             return
         for serendipity in data:

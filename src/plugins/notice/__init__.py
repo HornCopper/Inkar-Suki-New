@@ -14,7 +14,7 @@ from nonebot.adapters.onebot.v11 import (
 from nonebot.params import CommandArg
 
 from src.config import Config
-from src.utils.permission import checker, error
+from src.utils.permission import check_permission, denied
 from src.utils.database import db
 from src.utils.database.classes import BannedUser, ApplicationsList, GroupSettings
 from src.utils.database.operation import get_group_settings, set_group_settings
@@ -110,10 +110,10 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
     arg_msg = args.extract_plain_text()
-    permission = checker(str(event.user_id), 5)
+    permission = check_permission(str(event.user_id), 5)
     personal_data = await bot.call_api("get_group_member_info", group_id=event.group_id, user_id=event.user_id, no_cache=True)
     group_admin = personal_data["role"] in ["owner", "admin"]
     if not permission and not group_admin:
-        await WelcomeEditMatcher.finish(error(5))
+        await WelcomeEditMatcher.finish(denied(5))
     set_group_settings(str(event.group_id), "welcome", arg_msg)
     await WelcomeEditMatcher.finish("好啦，已经设置完成啦！")

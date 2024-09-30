@@ -53,9 +53,9 @@ class School:
     @property
     def icon(self) -> str:
         """
-        门派心法图标。
+        门派图标。
         """
-        if self.name == None:
+        if self.name is None:
             return ""
         return build_path(
             ASSETS,

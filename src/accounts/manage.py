@@ -9,7 +9,7 @@ from src.utils.time import Time
 import random
 
 class CheckinRewards(BaseModel):
-    checkin_total_days: int # 累计签到
+    total_days: int # 累计签到
     is_lucky: bool # 是否触发额外奖励
     coin: int # 签到获得的金币（包含额外）
     lucky_value: int # 幸运值
@@ -55,7 +55,7 @@ class AccountManage:
         self.add_checkin_counts(1)
         self._update_last_checkin()
         return CheckinRewards(
-            checkin_total_days = self.checkin_counts + 1,
+            total_days = self.checkin_counts + 1,
             is_lucky = lucky,
             coin = coin,
             lucky_value = random.randint(0, 100)

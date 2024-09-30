@@ -6,7 +6,6 @@ from dataclasses import dataclass
 from src.utils.typing import override
 from src.utils.time import Time
 
-# 定义事件处理器，键为 action，值为处理函数
 handler: Dict[int, Callable[[dict], JX3APIPushEvent]] = {}
 
 def handle_event(action: int):
@@ -14,7 +13,6 @@ def handle_event(action: int):
     装饰器，用于注册事件类到处理器中。
     """
     def decorator_func(event_class: Type[JX3APIPushEvent]):
-        # 将 event_class 包装成一个接收字典参数的函数
         handler[action] = lambda data: event_class(**data)
         return event_class
     return decorator_func

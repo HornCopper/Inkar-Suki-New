@@ -5,7 +5,7 @@ from nonebot.params import CommandArg, Arg
 from nonebot.typing import T_State
 
 from src.utils.analyze import check_number
-from src.utils.permission import checker, error
+from src.utils.permission import check_permission, denied
 from src.utils.database.operation import get_group_settings, set_group_settings
 from src.const.prompts import PROMPT
 
@@ -62,8 +62,8 @@ SetWikiMatcher = on_command("setwiki", force_whitespace=True, priority=5)
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
-    if not checker(str(event.user_id), 5):
-        await SetWikiMatcher.finish(error(5))
+    if not check_permission(str(event.user_id), 5):
+        await SetWikiMatcher.finish(denied(5))
     api = await wiki_.get_api(args.extract_plain_text())
     if api["status"] == 500:
         await SetWikiMatcher.finish("唔……此站点非有效的MediaWiki，请检查后重试~")
@@ -93,8 +93,8 @@ async def _(bot: Bot, event: GroupMessageEvent, full_argument: Message = Command
     personal_data = await bot.call_api("get_group_member_info", group_id=event.group_id, user_id=event.user_id, no_cache=True)
     group_admin = personal_data["role"] in ["owner", "admin"]
     if not group_admin:
-        if not checker(str(event.user_id), 5):
-            await InterWikiManageMatcher.finish(error(5))
+        if not check_permission(str(event.user_id), 5):
+            await InterWikiManageMatcher.finish(denied(5))
     args = full_argument.extract_plain_text().split(" ")
     if args[0] == "add":
         if len(args) != 3:

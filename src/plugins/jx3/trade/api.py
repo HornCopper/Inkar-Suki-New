@@ -48,7 +48,7 @@ async def get_trade_image(server: str, name: str, items: list = []):
             continue
         id = i["id"]
         itemAPIData = (await Request(f"https://next2.jx3box.com/api/item-price/{id}/logs?server={server}&limit=20").get()).json()
-        if itemAPIData["data"]["logs"] == None:
+        if itemAPIData["data"]["logs"] is None:
             continue
         else:
             new["data"] = itemAPIData["data"]
@@ -79,7 +79,7 @@ async def get_trade_image(server: str, name: str, items: list = []):
         color = ["(167, 167, 167)", "(255, 255, 255)", "(0, 210, 75)", "(0, 126, 255)", "(254, 45, 254)", "(255, 165, 0)"][itemList_searchable[0]["quality"]]
         itemId = itemList_searchable[0]["id"]
         detailData = (await Request(f"https://next2.jx3box.com/api/item-price/{itemId}/detail?server={server}&limit=20").get()).json()
-        if (not currentStatus or yesterdayFlag) and detailData["data"]["prices"] == None:
+        if (not currentStatus or yesterdayFlag) and detailData["data"]["prices"] is None:
             if not yesterdayFlag:
                 return ["唔……该物品目前交易行没有数据。"]
             else:
@@ -124,7 +124,7 @@ async def get_trade_image(server: str, name: str, items: list = []):
             final_name = each_item["name"]
             itemData = (await Request(f"https://next2.jx3box.com/api/item-price/{itemId}/detail?server={server}&limit=20").get()).json()
             table_content = template_table
-            if itemData["data"]["prices"] == None:
+            if itemData["data"]["prices"] is None:
                 # 转用已存储的Log进行处理
                 itemData = each_item["data"]["logs"][-1]
                 time_that = itemData["CreatedAt"]
@@ -228,7 +228,7 @@ async def get_trade_image_allserver(name: str):
             itemId = itemList_searchable[0]["id"]
             icon = itemList_searchable[0]["icon"]
             detailData = (await Request(f"https://next2.jx3box.com/api/item-price/{itemId}/detail?server={server}&limit=20").get()).json()
-            if (not currentStatus or yesterdayFlag) and detailData["data"]["prices"] == None:
+            if (not currentStatus or yesterdayFlag) and detailData["data"]["prices"] is None:
                 if not yesterdayFlag:
                     table.append(Template(template_table).render(
                             icon=icon,

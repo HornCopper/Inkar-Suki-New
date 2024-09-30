@@ -50,7 +50,7 @@ class Enchant:
         enchant_data: dict = json.loads(f.read())
 
     def __init__(self, quality: int):
-        self.quality = quality
+        self.quality = int(quality)
 
     @property
     def name(self) -> str | None:

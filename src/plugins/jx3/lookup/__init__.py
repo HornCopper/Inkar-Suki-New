@@ -12,7 +12,7 @@ LookupPersonMatcher = on_command("jx3_cheater", aliases={"查人", "骗子"}, fo
 
 @LookupPersonMatcher.handle()
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
-    if args.extract_plain_text() == "" or not Config.jx3.api.enable:
+    if args.extract_plain_text() == "":
         return
     uin = args.extract_plain_text()
     if not check_number(uin):

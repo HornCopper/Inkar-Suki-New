@@ -41,7 +41,7 @@ async def get_uid_data(role_id: str = "", server: str = "") -> str | list:
     }
     data = (await Request("https://m.pvp.xoyo.com/role/indicator", params=params).post(tuilan=True)).json()
     data = data["data"]["role_info"]
-    if data == None:
+    if data is None:
         return PROMPT.UIDInvalid
     data["bodyName"] = data.pop("body_type")
     data["campName"] = data.pop("camp")
@@ -70,7 +70,7 @@ async def search_player(role_name: str = "", role_id: str = "", server_name: str
     player_data = db.where_one(RoleData(), "(roleName = ? OR roleId = ?) AND serverName = ?", role_name, role_id, server_name, default=None)
     if player_data is None:
         uid = await get_uid(roleName=role_name, serverName=server_name)
-        if uid == None:
+        if uid is None:
             return Player()
         await get_uid_data(uid, server_name)
         return await search_player(role_name=role_name, role_id=uid)

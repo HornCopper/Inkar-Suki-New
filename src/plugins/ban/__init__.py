@@ -7,7 +7,7 @@ from nonebot.params import CommandArg
 from src.config import Config
 from src.const.prompts import PROMPT
 from src.utils.analyze import check_number
-from src.utils.permission import checker, error
+from src.utils.permission import check_permission, denied
 from src.utils.message import message_universal
 
 from .process import Ban
@@ -19,8 +19,8 @@ BanMatcher = on_command("ban", force_whitespace=True, priority=5)
 async def _(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
-    if not checker(str(event.user_id), 10):
-        await BanMatcher.finish(error(10))
+    if not check_permission(str(event.user_id), 10):
+        await BanMatcher.finish(denied(10))
     user_id = args.extract_plain_text()
     if not check_number(user_id):
         await BanMatcher.finish(PROMPT.ArgumentInvalid)    
@@ -35,8 +35,8 @@ UnbanMatcher = on_command("unban", force_whitespace=True, priority=5)
 async def _(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
-    if not checker(str(event.user_id), 10):
-        await UnbanMatcher.finish(error(10))
+    if not check_permission(str(event.user_id), 10):
+        await UnbanMatcher.finish(denied(10))
     user_id = args.extract_plain_text()
     if not check_number(user_id):
         await UnbanMatcher.finish(PROMPT.ArgumentInvalid)    
