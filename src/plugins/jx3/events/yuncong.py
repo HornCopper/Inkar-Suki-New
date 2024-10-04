@@ -16,7 +16,7 @@ def parity(num: int):
     return False
 
 async def get_yuncong_image():
-    url = f"{Config.jx3.api.url}/data/active/celebrity?season=3"
+    url = f"{Config.jx3.api.url}/data/active/celebs?name=云从社"
     data = (await Request(url).get()).json()
     tables = []
     for i in data["data"]:

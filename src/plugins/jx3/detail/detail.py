@@ -2,7 +2,7 @@ from pathlib import Path
 from jinja2 import Template
 from typing import Tuple, Literal, List
 
-from src.const.jx3.constant import server_zones_mapping_data as map_list
+from src.const.jx3.constant import dungeon_name_data as map_list
 from src.const.path import build_path, TEMPLATES
 from src.const.prompts import PROMPT
 from src.utils.database.player import search_player
@@ -170,16 +170,18 @@ async def get_zone_detail_image(server: str, name: str):
         is_first = True
         for mode in map_data:
             if is_first:
-                template = Template(template_zone_detail).render(
-                    header = Template(template_zone_detail_header).render(
+                template = template_zone_detail.replace(
+                    "{{ header }}", 
+                    Template(template_zone_detail_header).render(
                         count = str(mode_count),
                         name = map
                     )
                 )
                 is_first = False
             else:
-                template = Template(template_zone_detail).render(
-                    header = ""
+                template = template_zone_detail.replace(
+                    "{{ header }}", 
+                    ""
                 )
             params = {
                 "cursor": 0, 
@@ -209,6 +211,15 @@ async def get_zone_detail_image(server: str, name: str):
                     ]
                 )
             ).as_uri(),
+            additional_js = Path(
+                build_path(
+                    TEMPLATES,
+                    [
+                        "jx3",
+                        "zone_detail.js"
+                    ]
+                )
+            ),
             table_head = table_zone_detail_header,
             table_body = "\n".join(table)
         )

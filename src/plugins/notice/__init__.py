@@ -9,6 +9,7 @@ from nonebot.adapters.onebot.v11 import (
     GroupRequestEvent,
     GroupDecreaseNoticeEvent, 
     GroupBanNoticeEvent,
+    PokeNotifyEvent,
     MessageSegment as ms
 )
 from nonebot.params import CommandArg
@@ -48,12 +49,11 @@ async def _(bot: Bot, event: GroupIncreaseNoticeEvent):
 async def notice_and_ban(bot: Bot, event: GroupDecreaseNoticeEvent | GroupBanNoticeEvent, action: str):
     message = f"唔……{Config.bot_basic.bot_name}在群聊（{event.group_id}）被{action}啦！\n操作者：{event.operator_id}，已自动封禁！"
     notice = notice_to
-    await bot.call_api("send_group_msg", group_id=int(notice[str(event.self_id)]), message=message)
-    kicker = str(event.operator_id)
-    if Ban(kicker).status:
+    if Ban(event.operator_id).status:
         return
     banlist_obj: BannedUser = BannedUser(user_id=event.operator_id, reason="T")
     db.save(banlist_obj)
+    await bot.call_api("send_group_msg", group_id=int(notice[str(event.self_id)]), message=message)
 
 @notice.handle()
 async def _(bot: Bot, event: GroupBanNoticeEvent):
@@ -74,6 +74,13 @@ async def _(bot: Bot, event: GroupDecreaseNoticeEvent):
     if event.sub_type != "kick_me":
         return
     await notice_and_ban(bot, event, "移出")
+
+@notice.handle()
+async def _(event: PokeNotifyEvent):
+    if event.group_id is None or str(event.target_id) not in list(Config.bot_basic.bot_notice):
+        return
+    else:
+        await notice.finish("音卡在呢！找音卡有什么事吗！(^ω^)" + ms.image("https://inkar-suki.codethink.cn/Inkar-Suki-Docs/img/emoji.jpg"))
 
 request = on_request(priority=5)
 

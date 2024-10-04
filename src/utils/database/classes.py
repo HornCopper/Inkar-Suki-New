@@ -3,7 +3,7 @@ from typing import List, Dict
 from src.utils.database.lib import LiteModel
 
 class Account(LiteModel):
-    TABLE_NAME: str = "acouunts"
+    TABLE_NAME: str = "accounts"
     user_id: int = 0
     checkin_counts: int = 0
     coins: int = 0

@@ -24,7 +24,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         return
     arg = args.extract_plain_text().split(" ")
     if len(arg) not in [3, 4]:
-        await BindAffectionMatcher.finish(PROMPT.ArgumentCountInvalid)
+        await BindAffectionMatcher.finish("绑定失败！请参考下面的命令格式：\n绑定情缘 自己ID 对方ID 对方QQ 时间(可不填)")
     self_name = arg[0]
     self_qq = event.user_id
     other_name = arg[1]

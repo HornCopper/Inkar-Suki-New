@@ -1,10 +1,9 @@
 from pathlib import Path
 
-from nonebot import on_regex, on_notice, on_command
+from nonebot import on_regex, on_command
 from nonebot.adapters import Message
 from nonebot.params import CommandArg
 from nonebot.adapters.onebot.v11 import (
-    PokeNotifyEvent,
     MessageEvent,
     GroupMessageEvent,
     MessageSegment as ms
@@ -77,15 +76,6 @@ async def _(event: MessageEvent):
     msg = (f"{Config.bot_basic.bot_name}建议你喝: \n⭐{image_path.stem}⭐\n" + ms.image(Request(image_path.as_uri()).local_content))
     await what_eat.send("正在为你找好喝的……")
     await what_eat.send(msg, at_sender=True)
-
-poke_me = on_notice(priority=5)
-
-@poke_me.handle()
-async def _(event: PokeNotifyEvent):
-    if event.group_id is None or str(event.target_id) not in list(Config.bot_basic.bot_notice):
-        return
-    else:
-        await poke_me.finish("音卡在呢！找音卡有什么事吗！(^ω^)" + ms.image("https://inkar-suki.codethink.cn/Inkar-Suki-Docs/img/emoji.jpg"))
 
 bmi = on_command("bmi", aliases={"BMI", "身体质量指数"}, force_whitespace=True, priority=5)
 

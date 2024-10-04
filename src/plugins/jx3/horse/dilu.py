@@ -119,10 +119,7 @@ async def get_dilu_data():
             table.append(
                 re.sub(
                     r"\{\{ .+? \}\}", "暂无信息",
-                    Template(template_dilu).render(
-                        server = i["server"], 
-                        img = ""
-                    )
+                    template_dilu.replace("{{ server }}", i["server"])
                 )
             )
         else:

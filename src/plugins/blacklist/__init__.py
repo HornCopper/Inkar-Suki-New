@@ -8,8 +8,6 @@ from nonebot.params import CommandArg
 
 from src.utils.database.operation import get_group_settings
 from src.utils.permission import check_permission
-from src.utils.file import read, write
-from src.const.path import ASSETS, CACHE, TEMPLATES
 from src.utils.generate import generate
 from src.templates import HTMLSourceCode
 
@@ -41,7 +39,7 @@ async def _(
     if len(args) != 2:
         await BlockMatcher.finish("唔……需要2个参数，第一个参数为玩家名，第二个参数是原因~\n提示：理由中请勿包含空格。")
     status = BlackList(args[0], event.group_id).add(args[1])
-    if not status:
+    if status:
         await BlockMatcher.finish("该玩家已加入黑名单，请勿重复添加，如需更新理由可以先移除再重新添加。")
     await BlockMatcher.finish("成功将该玩家加入黑名单！")
 

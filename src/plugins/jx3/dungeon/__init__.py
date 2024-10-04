@@ -10,8 +10,7 @@ from src.utils.network import Request
 
 from .api import (
     get_zone_record_image,
-    get_drop_list_image,
-    get_item_record
+    get_drop_list_image
 )
 from .monster import get_monsters_map
 
@@ -57,27 +56,12 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     dungeonInstance = Dungeon(map, mode)
     if dungeonInstance.name is None or dungeonInstance.mode is None:
         await DropsListMatcher.finish(PROMPT.DungeonInvalid)
-    data = await get_drop_list_image(map, mode, boss)
+    data = await get_drop_list_image(dungeonInstance.name, dungeonInstance.mode, boss)
     if isinstance(data, str):
         data = Request(data).local_content
         await DropsListMatcher.send(ms.image(data))
     elif isinstance(data, list):
         await DropsListMatcher.finish(data[0])
-
-ItemRecordMatcher = on_command("jx3_itemdrop", aliases={"掉落"}, force_whitespace=True, priority=5)
-
-
-@ItemRecordMatcher.handle()
-async def _(event: GroupMessageEvent, args: Message = CommandArg()):
-    if args.extract_plain_text() == "":
-        return
-    arg = args.extract_plain_text()
-    data = await get_item_record(arg)
-    if isinstance(data, list):
-        await ItemRecordMatcher.finish(data[0])
-    elif isinstance(data, str):
-        data = Request(data).local_content
-        await ItemRecordMatcher.finish(ms.image(data))
 
 MonstersMatcher = on_command("jx3_monsters_v2", aliases={"百战v2", "百战"}, force_whitespace=True, priority=5)
 

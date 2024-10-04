@@ -5,7 +5,7 @@ from playwright.async_api import (
 )
 from pathlib import Path
 from nonebot.log import logger
-from typing import Any
+from typing import Any, Dict, Literal
 
 from src.const.path import CACHE, build_path
 from src.utils.file import write
@@ -54,7 +54,7 @@ class ScreenshotConfig:
         self.delay = delay
         self.additional_css = additional_css
         self.additional_js = additional_js
-        self.viewport = viewport or {"width": 1920, "height": 1080}
+        self.viewport: Dict[Literal["width", "height"], int] = viewport or {"width": 1920, "height": 1080}
         self.full_screen = full_screen
         self.hide_classes = hide_classes or []
         self.device_scale_factor = device_scale_factor
@@ -92,7 +92,7 @@ class ScreenshotGenerator:
         if self._browser is None or self._context is None:
             raise BrowserNotInitializedException()
 
-        page = await self._browser.new_page()
+        page = await self._browser.new_page(viewport=config.viewport) # type: ignore
         await page.goto(page_source)  # 使用 page_source 加载页面
 
         # 应用自定义的 CSS 和 JS

@@ -16,7 +16,7 @@ template_drop = """
     <td class="short-column">
         {{ stars }}
     </td>
-    <td class="short-column">{{ quailty }}</td>
+    <td class="short-column">{{ quality }}</td>
     <td class="short-column">{{ score }}</td>
     <td class="short-column"><div class="attrs">{{ fivestone }}</div></td>
 </tr>

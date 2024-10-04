@@ -2,8 +2,8 @@ from nonebot import on_command
 from nonebot.adapters import Message
 from nonebot.params import CommandArg
 
-from .mcv import get_be_version, get_je_version
-from .mcs import get_bedrock_server, get_java_server
+from .version import get_be_version, get_je_version
+from .server import get_bedrock_server, get_java_server
 
 mcbv = on_command("mcbv", force_whitespace=True, priority=5)  # 获取MC基岩版最新版本
 

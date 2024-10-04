@@ -4,7 +4,7 @@ from src.utils.network import Request
 async def get_exam_answer(question):
     def qa(q, a):
         return f"问题：{q}\n答案：{a}"
-    full_link = f"{Config.jx3.api.url}/data/exam/answer?match={question}"
+    full_link = f"{Config.jx3.api.url}/data/exam/answer?subject={question}"
     info = (await Request(full_link).get()).json()
     if info["code"] == 400:
         return "没有找到任何与此相关的题目哦~"

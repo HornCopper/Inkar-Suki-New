@@ -31,7 +31,7 @@ class PROMPT:
     AffectionRoleNotExist = "绑定失败，对方或者自己的ID无法对应到角色！\n请检查对面或自身角色是否在本群聊绑定的服务器中！"
     AffectionBindComplete = "成功绑定情缘！\n可通过“查看情缘证书”生成一张情缘证书图！"
     AffectionUnbindWithNo = "咱就是说，还没绑定情缘，在解除什么呢？"
-    AffectionGenerateWithNo = "咱就是说，还没绑定情缘，在解除什么呢？"
+    AffectionGenerateWithNo = "咱就是说，还没绑定情缘，在生成什么呢？"
 
     # jx3/calculator
     CalculatorNotMatch = "唔……门派和计算器不匹配！"

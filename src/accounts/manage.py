@@ -16,6 +16,7 @@ class CheckinRewards(BaseModel):
 
 class AccountManage:
     def __init__(self, user_id: int | str):
+        self.user_id = user_id
         self.data: Account | Any = db.where_one(Account(), "user_id = ?", int(user_id), default=Account(user_id=int(user_id)))
     
     @property
@@ -32,7 +33,12 @@ class AccountManage:
     
     @property
     def checkin_status(self) -> bool:
-        """判断上次签到时间是否在当前周期内"""
+        """
+        判断上次签到时间是否在当前周期内
+        
+        Returns:
+            is_in_cycle (bool): 是否在本周期内。
+        """
         current_time = datetime.now()
         today_7_am = current_time.replace(hour=7, minute=0, second=0, microsecond=0)
         if current_time < today_7_am:
@@ -47,43 +53,37 @@ class AccountManage:
     def checkin(self) -> Literal[False] | CheckinRewards:
         if self.checkin_status:
             return False
+    
         coin = random.randint(0, 4000)
         lucky = True if random.randint(0, 100) % 25 == 0 else False
         if lucky:
             coin += 10000
-        self.add_coin(coin)
-        self.add_checkin_counts(1)
-        self._update_last_checkin()
-        return CheckinRewards(
-            total_days = self.checkin_counts + 1,
-            is_lucky = lucky,
-            coin = coin,
-            lucky_value = random.randint(0, 100)
-        )
+
+        self.data.coins += coin
+        self.data.checkin_counts += 1
+        self._update_last_checkin_data()
+
+        db.save(self.data)
         
+        return CheckinRewards(
+            total_days=self.checkin_counts,
+            is_lucky=lucky,
+            coin=coin,
+            lucky_value=random.randint(0, 100)
+        )    
     
     def add_coin(self, counts: int) -> None:
         final_coins = self.coins + counts
-        instance = self.data
-        instance.coins = final_coins
-        db.save(instance)
+        self.data.coins = final_coins
+        db.save(self.data)
 
     def reduce_coin(self, counts: int) -> None:
         final_coins = self.coins - counts
         if final_coins < 0:
             final_coins = 0
-        instance = self.data
-        instance.coins = final_coins
-        db.save(instance)
+        self.data.coins = final_coins
+        db.save(self.data)
 
-    def add_checkin_counts(self, counts: int) -> None:
-        final_days = self.checkin_counts + counts
-        instance = self.data
-        instance.checkin_counts = final_days
-        db.save(instance)
-
-    def _update_last_checkin(self):
+    def _update_last_checkin_data(self):
         current_time = Time().raw_time
-        instance = self.data
-        instance.last_checkin = current_time
-        db.save(instance)
+        self.data.last_checkin = current_time

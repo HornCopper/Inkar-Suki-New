@@ -44,7 +44,6 @@ from .detail import (
 from .dungeon import (
     MonstersMatcher,
     DropsListMatcher,
-    ItemRecordMatcher,
     ZoneRecordMatcher
 )
 from .emoji import (

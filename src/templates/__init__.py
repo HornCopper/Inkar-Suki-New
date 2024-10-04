@@ -27,7 +27,7 @@ class HTMLSourceCode:
     def __init__(
             self,
             application_name: str,
-            font_path: str = build_path(ASSETS, ["font", "cutsom.ttf"]),
+            font_path: str = build_path(ASSETS, ["font", "custom.ttf"]),
             footer: str = "严禁将蓉蓉机器人与音卡共存，一经发现永久封禁！蓉蓉是抄袭音卡的劣质机器人！",
             additional_css: str = "",
             additional_js: Path | None = None,
@@ -52,16 +52,14 @@ class HTMLSourceCode:
         if additional_js is None:
             self.js = ""
         else:
-            self.js = additional_js.as_uri()
+            self.js = "<script src=\"" + additional_js.as_uri() + "\"></script>"
 
     def __str__(self) -> str:
         if self.kwargs.get("table_head", None) is not None:
             self.kwargs["table_width_length"] = str(len(re.findall(r"<th.*?>.*?</th>", self.kwargs.get("table_head", []), re.DOTALL)))
         css_path = f"<link rel=\"stylesheet\" href=\"" + self.css + "\">" if self.css.startswith("file") or self.css.startswith("http") else ""
         css_content = self.css if not self.css.startswith("file") and not self.css.startswith("http") else ""
-        return Template(
-            self.standard
-        ).render(
+        return Template(self.standard).render(
             css_link = css_path,
             css = css_content,
             font = self.font,

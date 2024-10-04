@@ -25,7 +25,7 @@ from ._template import (
     table_item_head
 )
 
-async def get_map(name, mode) -> int | None:
+async def get_map(name: str, mode: str) -> int | None:
     params = {
         "mode": 2
     }
@@ -38,25 +38,24 @@ async def get_map(name, mode) -> int | None:
                         return y["map_id"]
 
 
-async def get_boss(map, mode, boss) -> str | None:
+async def get_boss(map: str, mode: str, boss: str) -> str | None:
     map_id = await get_map(map, mode)
     params = {
         "map_id": map_id
     }
     data = (await Request(url="https://m.pvp.xoyo.com/dungeon/info", params=params).post(tuilan=True)).json()
-    data = json.loads(data)
     for i in data["data"]["info"]["boss_infos"]:
         if i["name"] == boss:
             return i["index"]
 
 
-async def get_drops(map, mode, boss) -> dict:
+async def get_drops(map: str, mode: str, boss: str) -> dict:
     boss_id = await get_boss(map, mode, boss)
     params = {
         "boss_id": boss_id
     }
     data = (await Request(url="https://m.pvp.xoyo.com/dungeon/boss-drop", params=params).post(tuilan=True)).json()
-    return json.loads(data)
+    return data
 
 # 暂时不打算做5人副本，5人副本与10人副本的请求地址不同。
 # 10人/25人：https://m.pvp.xoyo.com/dungeon/list
@@ -123,7 +122,6 @@ async def get_drop_list_image(map: str, mode: str, boss: str):
                     if i["Icon"]["SubKind"] != "戒指":
                         diamon_data = i["DiamonAttribute"]
                         diamon_list = []
-                        logger.info(diamon_data)
                         for x in diamon_data:
                             if x["Desc"] == "atInvalid":
                                 continue
@@ -251,7 +249,7 @@ async def get_drop_list_image(map: str, mode: str, boss: str):
                 table_body = "\n".join(table_content)
             )
         )
-        final_path = await generate(html, "table", False)
+        final_path = await generate(html, "table", False, 500)
         if not isinstance(final_path, str):
             return
         return Path(final_path).as_uri()
@@ -272,10 +270,10 @@ async def get_zone_record_image(server: str, role: str):
     }
     data = (await Request("https://m.pvp.xoyo.com/h5/parser/cd-process/get-by-role", params=params).post(tuilan=True)).json()
     unable = Template(image_template).render(
-        image_path = build_path(ASSETS, ["jx3", "image", "cat", "grey.png"])
+        image_path = build_path(ASSETS, ["image", "jx3", "cat", "grey.png"])
     )
     available = Template(image_template).render(
-        image_path = build_path(ASSETS, ["jx3", "image", "cat", "gold.png"])
+        image_path = build_path(ASSETS, ["image", "jx3", "cat", "gold.png"])
     )
     if data["data"] == []:
         return ["该玩家目前尚未打过任何副本哦~\n注意：10人普通副本会在周五刷新一次。"]
@@ -311,84 +309,3 @@ async def get_zone_record_image(server: str, role: str):
         if not isinstance(final_path, str):
             return
         return Path(final_path).as_uri()
-
-
-async def get_item_record(name: str):
-    headers = {
-        "Accept": "application/json, text/javascript, */*; q=0.01",
-        "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
-        "Cache-Control": "no-cache",
-        "Connection": "keep-alive",
-        "Content-Type": "application/json",
-        "Pragma": "no-cache",
-        "Sec-Fetch-Dest": "empty",
-        "Sec-Fetch-Mode": "cors",
-        "Sec-Fetch-Site": "same-origin",
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36 Edg/114.0.1823.82",
-        "X-Requested-With": "XMLHttpRequest",
-        "sec-ch-ua": "\"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"114\", \"Microsoft Edge\";v=\"114\"",
-        "sec-ch-ua-mobile": "?0",
-        "sec-ch-ua-platform": "\"Windows\"",
-        "Referer": "https://www.jx3mm.com/jx3fun/jevent/jcitem.html"
-    }
-    filter = {
-        "Zone": "",
-        "Srv": "",
-        "Droppedi": name
-    }
-    base_params = {
-        "sort": "Tm",
-        "order": "desc",
-        "limit": 30,
-        "offset": 0,
-        "_": int(time.time()) * 1000,
-        "filter": json.dumps(filter, ensure_ascii=False),
-        "op": "{\"Zone\":\"LIKE\",\"Srv\":\"LIKE\"}"
-    }
-    data = (await Request("https://www.jx3mm.com/jx3fun/jevent/jcitem", headers=headers, params=base_params).get()).json()
-    if data["total"] == 0:
-        return ["未找到相关物品，请检查物品名称是否正确！"]
-    known_time = []
-    known_id = []
-    table_contents = []
-    num = 0
-    for i in data["rows"]:
-        if i["Tm"] in known_time and i["Nike"] in known_id:
-            continue
-        known_time.append(i["Tm"])
-        known_id.append(i["Nike"])
-        role = i["Nike"]
-        item_name = i["Droppedi"]
-        if i["Copyname"][0:2] in ["英雄", "普通"]:
-            zone = "25人" + i["Copyname"]
-        else:
-            zone = i["Copyname"]
-        catch_time = Time(i["Tm"]).format()
-        if not isinstance(catch_time, str):
-            return
-        relate_time = Time().relate(i["Tm"])
-        server = i["Srv"]
-        table_contents.append(
-            Template(template_item).render(
-                server = server,
-                name = item_name,
-                map = zone,
-                role = role,
-                time = catch_time,
-                relate = relate_time
-            )
-        )
-        num += 1
-        if num == 30:
-            break  # 不限？不限给你鲨了
-    html = str(
-        HTMLSourceCode(
-            application_name = f" · 掉落统计 · {server} · " + Time().format("%H:%M:%S"),
-            table_head = table_item_head,
-            table_body = "\n".join(table_contents)
-        )
-    )
-    final_path = await generate(html, "table", False)
-    if not isinstance(final_path, str):
-        return
-    return Path(final_path).as_uri()

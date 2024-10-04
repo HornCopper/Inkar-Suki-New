@@ -31,7 +31,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     elif len(arg) == 2:
         server = arg[0]
         name = arg[1]
-    server = Server(server).server
+    server = Server(server, event.group_id).server
     if server is None:
         await V2SerendipityMatcher.finish(PROMPT.ServerNotExist)
     data = await v2_serendipity(server, name, True)
@@ -61,7 +61,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     elif len(arg) == 2:
         server = arg[0]
         id = arg[1]
-    server = Server(server).server
+    server = Server(server, event.group_id).server
     if server is None:
         await V3SerendipityMatcher.finish(PROMPT.ServerNotExist)
     data = await v3_serendipity(server, id)
@@ -91,7 +91,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     elif len(arg) == 2:
         server = arg[0]
         name = arg[1]
-    server = Server(server).server
+    server = Server(server, event.group_id).server
     if server is None:
         await PetSerendipityMatcher.finish(PROMPT.ServerNotExist)
     data = await v2_serendipity(server, name, False)

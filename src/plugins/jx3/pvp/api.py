@@ -65,7 +65,6 @@ class Indicator:
             match_key = mode[0] + "c"
             for pvp_data in data["data"].get("indicator", []):
                 if pvp_data["type"] == match_key:
-                    print(pvp_data.get("performance"))
                     return pvp_data.get("performance")
         return None
 

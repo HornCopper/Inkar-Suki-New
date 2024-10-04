@@ -77,7 +77,7 @@ def time_record(func):
         time_start = time.time()
         result = await func(*args, **kwargs)
         time_end = time.time()
-        logger.info(f"{func.__name__} 执行时间: {time_end - time_start:.6f} 秒")
+        logger.opt(colors=True).info(f"<green>{func.__name__} running  completed, {time_end - time_start:.6f}s spent.</green>")
         return result
 
     @wraps(func)
@@ -85,7 +85,7 @@ def time_record(func):
         time_start = time.time()
         result = func(*args, **kwargs)
         time_end = time.time()
-        logger.info(f"{func.__name__} 执行时间: {time_end - time_start:.6f} 秒")
+        logger.opt(colors=True).info(f"<green>{func.__name__} running  completed, {time_end - time_start:.6f}s spent.</green>")
         return result
 
     if asyncio.iscoroutinefunction(func):

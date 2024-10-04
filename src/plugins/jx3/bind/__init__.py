@@ -10,12 +10,14 @@ from src.utils.database.player import get_uid_data
 from src.utils.permission import check_permission
 
 def bind_srv(group_id: str, server: str | None):
-    if not server == "":
-        # 当server为空表示要清空
+    if server != "":
         server_ = Server(server).server
         if not server_:
             return [PROMPT.ServerNotExist]
-    set_group_settings(group_id, "server", server_)
+        else:
+            set_group_settings(group_id, "server", server_)
+    else:
+        set_group_settings(group_id, "server", "")
 
 BindServerMatcher = on_command("jx3_bind", aliases={"绑定", "绑定区服"}, force_whitespace=True, priority=5)
 

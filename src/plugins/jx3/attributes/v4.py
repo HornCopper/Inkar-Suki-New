@@ -1,5 +1,5 @@
 from pathlib import Path
-from jinja2 import Template
+from jinja2 import Environment, DebugUndefined, Template
 
 from src.const.prompts import PROMPT
 from src.const.jx3.server import Server
@@ -129,16 +129,21 @@ async def get_attrs_v4(server: str, name: str):
         ]
     qixue = ["未知"] * 12
     qixue_image = [build_path(ASSETS, ["image", "jx3", "attributes", "unknown.png"])] * 12
-    for qixue in data["data"]["qixueList"]:
-        qixueInstance = await Qixue.create(qixue, kungfu=kungfuInstance.name or "")
+    for qixue_ in data["data"]["Person"]["qixueList"]:
+        qixueInstance = await Qixue.create(qixue_, kungfu=kungfuInstance.name or "")
         location = qixueInstance.location
         if location is None:
             continue
         x, y, icon = location
-        qixue[int(x)-1] = qixue["name"]
+        qixue[int(x)-1] = qixue_["name"]
         qixue_image[int(x)-1] = icon
 
     table = []
+
+    school = kungfuInstance.school
+    if not school:
+        school = ""
+
     html = str(
         SimpleHTML(
             "jx3",
@@ -147,7 +152,11 @@ async def get_attrs_v4(server: str, name: str):
             panel_value = json.dumps(basic_info, ensure_ascii=False),
             qixue_name = json.dumps(qixue, ensure_ascii=False),
             qixue_img = json.dumps(qixue_image, ensure_ascii=False),
-            background = build_path(ASSETS, ["image", "assistance", "10.jpg"])
+            background = build_path(ASSETS, ["image", "jx3", "assistance", "10.jpg"]),
+            table_content = "{{ table_content }}",
+            font = build_path(ASSETS, ["font", "custom.ttf"]),
+            school = build_path(ASSETS, ["image", "school", school + ".svg"]),
+            color = kungfuInstance.color
         )
     )
     for location in ["帽子", "上衣", "腰带", "护臂", "裤子", "鞋", "项链", "腰坠", "戒指", "戒指", "投掷囊"]: # 武器单独适配，此处适配全身除武器以外的
@@ -184,12 +193,12 @@ async def get_attrs_v4(server: str, name: str):
                     permanent_enchant_flag = True
                     permanent_enchant_name = each_location["WPermanentEnchant"]["Name"]
                 if permanent_enchant_flag and common_enchant_flag:
-                    display_enchant = "<img src=\"" + build_path(ASSETS, ["jx3", "attributes", "common_enchant.png"]) + "\" style=\"vertical-align: middle;\"><img src=\"" + build_path(ASSETS, ["jx3", "attributes", "permanent_enchant.png"]) + "\" style=\"vertical-align: middle;\">" + permanent_enchant_name
+                    display_enchant = "<img src=\"" + build_path(ASSETS, ["image", "jx3", "attributes", "common_enchant.png"]) + "\" style=\"vertical-align: middle;\"><img src=\"" + build_path(ASSETS, ["image", "jx3", "attributes", "permanent_enchant.png"]) + "\" style=\"vertical-align: middle;\">" + permanent_enchant_name
                 else:
                     if permanent_enchant_flag and not common_enchant_flag:
-                        display_enchant = "<img src=\"" + build_path(ASSETS, ["jx3", "attributes", "permanent_enchant.png"]) + "\" style=\"vertical-align: middle;\">" + permanent_enchant_name
+                        display_enchant = "<img src=\"" + build_path(ASSETS, ["image", "jx3", "attributes", "permanent_enchant.png"]) + "\" style=\"vertical-align: middle;\">" + permanent_enchant_name
                     elif common_enchant_flag and not permanent_enchant_flag:
-                        display_enchant = "<img src=\"" + build_path(ASSETS, ["jx3", "attributes", "common_enchant.png"]) + "\" style=\"vertical-align: middle;\">" + common_enchant_name
+                        display_enchant = "<img src=\"" + build_path(ASSETS, ["image", "jx3", "attributes", "common_enchant.png"]) + "\" style=\"vertical-align: middle;\">" + common_enchant_name
                     else:
                         display_enchant = ""
                 source = each_location["equipBelongs"]
@@ -274,14 +283,8 @@ async def get_attrs_v4(server: str, name: str):
                 source = source
             )
         )
-    school = kungfuInstance.school
-    if not school:
-        school = ""
     html = Template(html).render(
-        font = build_path(ASSETS, ["font", "custom.ttf"]),
-        table_content = "\n".join(table),
-        school = build_path(ASSETS, ["image", "school", school + ".svg"]),
-        color = kungfuInstance.color,
+        table_content = "\n".join(table)
     )
     final_path = await generate(html, "", False, viewport={"width": 2200, "height": 1250}, full_screen=True) 
     if not isinstance(final_path, str):

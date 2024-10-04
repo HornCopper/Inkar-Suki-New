@@ -2,6 +2,7 @@ from src.utils.database.lib import Database
 from src.utils.database.classes import (
     Account,
     ApplicationsList,
+    Affections,
     BannedUser,
     GroupSettings,
     Population,
@@ -17,6 +18,7 @@ db = Database(build_path(DATA, ["Snowykami.db"]))
 db.auto_migrate(
     Account(),
     ApplicationsList(),
+    Affections(),
     BannedUser(),
     GroupSettings(),
     Population(),

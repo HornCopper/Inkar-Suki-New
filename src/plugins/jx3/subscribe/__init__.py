@@ -24,7 +24,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         subscribe_options = json.loads(read(build_path(ASSETS, ["source", "subscribe"], end_with_slash=True) + "options.json"))
         addition_options = json.loads(read(build_path(ASSETS, ["source", "subscribe"], end_with_slash=True) + "additions.json"))
         if not set(arg).issubset(set(list(subscribe_options) + list(addition_options))):
-            await EnableMatcher.finish("唔……开启失败，虽然音卡可以一次开启多个订阅，但是好像您这里包含了不应该存在的订阅内容，请检查后重试！")
+            await EnableMatcher.finish("唔……开启失败，虽然音卡可以一次开启多个订阅，但是好像您这里包含了不应该存在的订阅内容，请检查后重试！\n可使用“关于”查看可订阅的内容！")
         current_subscribes = get_group_settings(str(event.group_id), "subscribe")
         current_additions = get_group_settings(str(event.group_id), "additions")
         if not isinstance(current_additions, list) or not isinstance(current_subscribes, list):
@@ -53,7 +53,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         subscribe_options = json.loads(read(build_path(ASSETS, ["source", "subscribe"], end_with_slash=True) + "options.json"))
         addition_options = json.loads(read(build_path(ASSETS, ["source", "subscribe"], end_with_slash=True) + "additions.json"))
         if not set(arg).issubset(set(list(subscribe_options) + list(addition_options))):
-            await EnableMatcher.finish("唔……关闭失败，虽然音卡可以一次关闭多个订阅，但是好像您这里包含了不应该存在的退订内容，请检查后重试！")
+            await EnableMatcher.finish("唔……关闭失败，虽然音卡可以一次关闭多个订阅，但是好像您这里包含了不应该存在的退订内容，请检查后重试！\n可使用“关于”查看可订阅的内容！")
         currentSubscribe = get_group_settings(str(event.group_id), "subscribe")
         currentAddition = get_group_settings(str(event.group_id), "additions")
         if not isinstance(currentAddition, list) or not isinstance(currentSubscribe, list):

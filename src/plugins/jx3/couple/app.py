@@ -20,7 +20,7 @@ from src.utils.generate import generate
 import random
     
 def check_status(uin: int):
-    data: Affections | None | Any = db.where_one(Affections(), "uin_1 = ? OR uin_2 = ?", (uin, uin), default=None)
+    data: Affections | None | Any = db.where_one(Affections(), "uin_1 = ? OR uin_2 = ?", uin, uin, default=None)
     if data is None:
         return False
     return True
@@ -53,6 +53,7 @@ async def bind_affection(uin_1: int, name_1: str, uin_2: int, name_2: str, group
         school_1 = school_1,
         school_2 = school_2
     )
+    db.save(new_data)
     return [PROMPT.AffectionBindComplete]
 
 async def delete_affection(uin: int) -> List[str] | None:
@@ -63,7 +64,7 @@ async def delete_affection(uin: int) -> List[str] | None:
 async def generate_affection_image(uin: int):
     if not check_status(uin):
         return [PROMPT.AffectionGenerateWithNo]
-    current_data: Affections | Any = db.where_one(Affections(), "uin_1 = ? OR uin_2 = ?", (uin, uin), default=None)
+    current_data: Affections | Any = db.where_one(Affections(), "uin_1 = ? OR uin_2 = ?", uin, uin, default=None)
     btxbfont = build_path(
         ASSETS,
         [
@@ -82,9 +83,10 @@ async def generate_affection_image(uin: int):
         ASSETS,
         [
             "image",
-            "assistance" + str(random.randint(1, 9)) + ".jpg"
-        ]
-    )
+            "assistance"
+        ],
+        end_with_slash=True
+    ) + str(random.randint(1, 9)) + ".jpg"
     uin_1 = current_data.uin_1
     uin_2 = current_data.uin_2
     color_1 = School(current_data.school_1).color
@@ -103,7 +105,7 @@ async def generate_affection_image(uin: int):
             TEMPLATES,
             [
                 "jx3",
-                "assistance.html"
+                "affections.html"
             ]
         )
     )

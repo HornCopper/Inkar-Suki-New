@@ -13,7 +13,7 @@ from ._message import message_sign
 
 import random
 
-LotMatcher = on_command("抽签", force_whitespace=True, priority=6)
+LotMatcher = on_command("抽签", force_whitespace=True, priority=5)
 
 @LotMatcher.handle()
 async def lq_(args: Message = CommandArg()):
